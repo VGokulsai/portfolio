@@ -51,16 +51,18 @@ SKIP = {USER}  # the profile repo is not a project
 #
 # Everything here has to be true and has to have already happened. Only the
 # two below can be read from the API, so only those two ship. Add yours in
-# the same shape - date first, past tense, one line, no adjectives:
+# the same shape as matthewnpark.com - date first, third person, present
+# tense, one short line, no adjectives:
 #
-#     ("2026-09-21", "Turned 16"),
-#     ("2026-08-31", "Applied to Axiom Pathways"),
+#     ("2026-09-21", "Turns 16"),
+#     ("2026-08-31", "Applies to Axiom Pathways"),
 #
-# Do not add anything you are still waiting on. The page says what was done,
+# Present tense is only the voice. Every entry must already have happened. Do
+# not add anything you are still waiting on. The page says what was done,
 # never what was hoped for, and a milestone that has not happened yet is the
 # one thing on here that could not be checked.
 MILESTONES = [
-    ("2025-08-08", "Opened a GitHub account"),
+    ("2025-08-08", "Opens a GitHub account"),
 ]
 
 # One table so a handle is added in one place. url of None means "I do not
@@ -507,6 +509,9 @@ def check():
     # A milestone has no state badge and no repo link - that is the only
     # thing separating the two kinds of row.
     assert html.count('class="row mark"') == len(MILESTONES)
+    # Milestones read like matthewnpark.com: third person, present tense.
+    assert "Opens a GitHub account" in html and "Opened" not in html, \
+        "milestones are third person present tense, not past tense"
     # A link with no url is left off rather than shipped dead. Derived from the
     # table rather than naming a handle, so it stays correct the day one is
     # actually added - the previous version of this assert was satisfied by
@@ -519,7 +524,7 @@ def check():
             assert _name in html, (
                 "%s has a url and must reach the page" % _name)
 
-    print("  18 checks pass")
+    print("  19 checks pass")
 
 
 if __name__ == "__main__":
