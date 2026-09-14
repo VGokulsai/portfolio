@@ -49,8 +49,8 @@ SKIP = {USER}  # the profile repo is not a project
 
 # The other strand of the ledger: things that happened that are not a repo.
 #
-# Everything here has to be true and has to have already happened. Only the
-# two below can be read from the API, so only those two ship. Add yours in
+# Everything here has to be true and has to have already happened. Only what
+# can be read from the API ships until you add more. Add yours in
 # the same shape as matthewnpark.com - date first, third person, present
 # tense, one short line, no adjectives:
 #
