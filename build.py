@@ -69,7 +69,7 @@ LINKS = [
     ("GitHub",       "https://github.com/%s" % USER),
     ("Journal",      "https://%s.github.io/journal/" % USER),
     ("Out Baby Out", "https://%s.github.io/outbabyout/" % USER),
-    ("Instagram",    None),
+    ("Instagram",    "https://instagram.com/gokulsai_2010"),
     ("LinkedIn",     None),
     ("Email",        "mailto:gokulsai1004@gmail.com"),
 ]
@@ -194,6 +194,17 @@ def state_contrast(html):
     return out
 
 
+def short_date(iso):
+    """2026-09-12 -> 09.12.26, the way Matthew sets them.
+
+    Month first, which is his convention and not the one used here. The
+    datetime attribute on every row stays ISO, so this is a display choice
+    only - flip the return to "%s.%s.%s" % (d, m, y[2:]) for day first.
+    """
+    y, m, d = iso.split("-")
+    return "%s.%s.%s" % (m, d, y[2:])
+
+
 def esc(s):
     return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
              .replace('"', "&quot;"))
@@ -227,7 +238,7 @@ def render(ps, source):
                 '<time datetime="%s">%s</time>'
                 '<div class="mid"><p class="what">%s</p></div>'
                 '<span class="state s-mark">&middot;</span>'
-                '</li>' % (p["created"], p["created"].replace("-", "."),
+                '</li>' % (p["created"], short_date(p["created"]),
                              esc(p["name"])))
             continue
         st = p["state"] or "NOT RECORDED"
@@ -241,7 +252,7 @@ def render(ps, source):
             '<div class="mid"><a class="nm" href="%s">%s</a>%s'
             '<p class="desc">%s</p>%s</div>'
             '<span class="state %s">%s</span>'
-            '</li>' % (p["created"], p["created"].replace("-", "."),
+            '</li>' % (p["created"], short_date(p["created"]),
                        esc(p["url"]), esc(p["name"]), live_a,
                        esc(p["desc"]) or "<em>no description</em>", note,
                        cls, st))
@@ -345,7 +356,7 @@ h2{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.18em;
 ul{list-style:none;margin:0;padding:0}
 .ledger{background:var(--panel);border-radius:var(--r);padding:0 1.2rem;
   overflow:hidden}
-.row{display:grid;grid-template-columns:5.6rem minmax(0,1fr) 7.4rem;
+.row{display:grid;grid-template-columns:4.6rem minmax(0,1fr) 7.4rem;
   gap:0 1.2rem;align-items:start;padding:1.05rem 0;
   border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
@@ -486,6 +497,10 @@ def check():
         "NOT RECORDED must be the loudest state, not the quietest"
 
     # Both strands land in one list, ordered by date across both of them.
+    # The attribute stays ISO for machines; only the printed form is short.
+    assert ">09.11.26<" in html or ">08.12.26<" in html, \
+        "dates print as MM.DD.YY, not as the ISO string"
+    assert short_date("2026-09-12") == "09.12.26", short_date("2026-09-12")
     dates = re.findall(r'<time datetime="([0-9-]+)"', html)
     assert dates == sorted(dates, reverse=True), ("one timeline, newest first", dates)
     assert len(dates) == len(ps) + len(MILESTONES), "every row reaches the page"
@@ -504,7 +519,7 @@ def check():
             assert _name in html, (
                 "%s has a url and must reach the page" % _name)
 
-    print("  16 checks pass")
+    print("  18 checks pass")
 
 
 if __name__ == "__main__":
