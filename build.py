@@ -43,6 +43,7 @@ STATE = {
     "specextract":      ("SHIPPED", None),
     "skillcheck":       ("SHIPPED", None),
     "mdwatch":          ("SHIPPED", None),
+    "portfolio":        ("SHIPPED", "This page. Every number on it is read from the GitHub API."),
 }
 
 SKIP = {USER}  # the profile repo is not a project
@@ -61,8 +62,16 @@ SKIP = {USER}  # the profile repo is not a project
 # not add anything you are still waiting on. The page says what was done,
 # never what was hoped for, and a milestone that has not happened yet is the
 # one thing on here that could not be checked.
+# The 2025 dates on the laptop, both football entries and the MUN are
+# approximate: he confirmed on 14 Sept 2026 that all four happened in 2025 and
+# chose placeholder dates because he does not remember the exact days. Replace
+# any of them with the real date when it turns up. The GitHub date is exact.
 MILESTONES = [
+    ("2025-11-22", "Wins an MUN"),
     ("2025-08-08", "Opens a GitHub account"),
+    ("2025-07-12", "Represents Hyderabad in a football match"),
+    ("2025-04-19", "Plays his first football match"),
+    ("2025-03-09", "Gets his first laptop"),
 ]
 
 # One table so a handle is added in one place. url of None means "I do not
@@ -180,9 +189,12 @@ def state_contrast(html):
     the page together and the check kept passing with the bug restored.
     """
     tokens = dict(re.findall(r"--([a-z0-9-]+):(#[0-9A-Fa-f]{6})", html))
-    panel = tokens.get("panel")
+    # Rows sit straight on the page ground now, not on a panel, so that is
+    # the surface measured. Measuring against a colour the label never
+    # touches would be the string-assert mistake again in a new form.
+    panel = tokens.get("field")
     if not panel:
-        raise AssertionError("no --panel token in the page to measure against")
+        raise AssertionError("no --field token in the page to measure against")
     out = {}
     for cls in ("s-ship", "s-build", "s-pause", "s-none"):
         m = re.search(r"\.%s\{color:var\(--([a-z0-9-]+)\)\}" % cls, html)
@@ -228,15 +240,16 @@ def render(ps, source, avatar=None):
         og += ('\n<meta property="og:image" content="%s">\n'
                '<meta name="twitter:card" content="summary">' % esc(avatar))
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-    langs = {}
-    for p in ps:
-        if p["lang"]:
-            langs[p["lang"]] = langs.get(p["lang"], 0) + 1
-    langline = " · ".join("%s %d" % (k, v) for k, v in
-                          sorted(langs.items(), key=lambda kv: -kv[1]))
     live = [p for p in ps if p["live"]]
-    linkrow = "".join('<a href="%s">%s</a>' % (esc(u), esc(n))
-                      for n, u in LINKS if u)
+    # Short codes in the bar, the way matthewnpark.com sets X IN IG TT YT. The
+    # full name stays on the page as title and aria-label, so a screen reader
+    # and a hover both get "Out Baby Out" rather than "OBO".
+    codes = {"GitHub": "GH", "Journal": "JR", "Out Baby Out": "OBO",
+             "Instagram": "IG", "LinkedIn": "IN", "Email": "@"}
+    linkrow = "".join(
+        '<a href="%s" title="%s" aria-label="%s">%s</a>'
+        % (esc(u), esc(n), esc(n), esc(codes.get(n, n)))
+        for n, u in LINKS if u)
     unrecorded = [p for p in ps if not p["state"]]
 
     entries = [dict(p, kind="build") for p in ps]
@@ -246,51 +259,40 @@ def render(ps, source, avatar=None):
     entries.sort(key=lambda e: e["created"], reverse=True)
 
     rows = []
-    for p in entries:
+    for i, p in enumerate(entries):
+        when = '<time datetime="%s">%s</time>' % (p["created"], short_date(p["created"]))
         if p["kind"] == "mark":
-            rows.append(
-                '<li class="row mark">'
-                '<time datetime="%s">%s</time>'
-                '<div class="mid"><p class="what">%s</p></div>'
-                '<span class="state s-mark">&middot;</span>'
-                '</li>' % (p["created"], short_date(p["created"]),
-                             esc(p["name"])))
+            rows.append('<li class="row mark" style="--i:%d">%s<p class="what">%s</p></li>'
+                        % (i, when, esc(p["name"])))
             continue
         st = p["state"] or "NOT RECORDED"
         cls = {"SHIPPED": "s-ship", "BUILDING": "s-build",
                "PAUSED": "s-pause"}.get(p["state"], "s-none")
-        live_a = ('<a class="live" href="%s">live</a>' % p["live"]) if p["live"] else ""
-        note = ('<span class="note">%s</span>' % esc(p["note"])) if p["note"] else ""
+        live_a = (' <a class="live" href="%s">live</a>' % esc(p["live"])) if p["live"] else ""
+        desc = ('<span class="desc">%s</span>' % esc(p["desc"])) if p["desc"] else ""
+        # "Starts" because the date on the row is the day the repo was
+        # created - it is the one verb the data can actually vouch for.
         rows.append(
-            '<li class="row">'
-            '<time datetime="%s">%s</time>'
-            '<div class="mid"><a class="nm" href="%s">%s</a>%s'
-            '<p class="desc">%s</p>%s</div>'
-            '<span class="state %s">%s</span>'
-            '</li>' % (p["created"], short_date(p["created"]),
-                       esc(p["url"]), esc(p["name"]), live_a,
-                       esc(p["desc"]) or "<em>no description</em>", note,
-                       cls, st))
+            '<li class="row" style="--i:%d">%s<p class="what" title="%s">'
+            'Starts <a href="%s">%s</a>%s<span class="state %s">%s</span>%s</p></li>'
+            % (i, when, esc(p["note"] or p["desc"] or ""), esc(p["url"]),
+               esc(p["name"]), live_a, cls, st, desc))
 
     rules = "".join(
         '<div class="rule"><h3>%s</h3><p>%s</p></div>' % (esc(t), esc(b))
         for t, b in RULES)
 
-    ratebit = ("%d projects in %d days &middot; %.1f a week"
-               % (r["n"], r["days"], r["per_week"])) if r else "not enough to measure"
+    ratebit = ("%d projects in %d days" % (r["n"], r["days"])) if r else "not enough to measure"
+    unrec = (" &middot; %d with no state recorded" % len(unrecorded)) if unrecorded else ""
 
     return TEMPLATE % {
         "rows": "\n".join(rows),
         "rules": rules,
         "rate": ratebit,
-        "n": len(ps),
-        "nlive": len(live),
-        "nunrec": len(unrecorded),
-        "langline": esc(langline),
+        "unrec": unrec,
         "stamp": stamp,
         "source": source,
-        "user": USER,
-        "span": ("%s to %s" % (r["first"].isoformat(), r["last"].isoformat())) if r else "",
+        "year": stamp[:4],
         "links": linkrow,
         "tagline": esc(TAGLINE),
         "og": og,
@@ -308,157 +310,166 @@ TEMPLATE = """<title>Gokul Sai</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
 <style>
 /* ----------------------------------------------------------------------------
-   Palette and type are Out Baby Out's, read out of that repo rather than picked
-   again: the field, the panel, the chalk, and the two colours the game already
-   uses to mean something - vish for out, amrit for the revive. They keep those
-   jobs here. Nothing decorative is painted in them.
+   Palette and faces are Out Baby Out's, read out of that repo: the field, the
+   chalk, the hot accent, and vish / amrit, which keep the jobs the game gives
+   them.
 
-   The shape of the page is learned from matthewnpark.com and deliberately not
-   copied from it. What is learned: a reverse-chronological dated ledger instead
-   of project cards, and one small type size doing nearly all the work (his
-   12px/-0.4px appears 107 times on a single page). What is not copied: his is
-   light, set in IBM Plex Mono and Inter, and lists things that happened to him.
-   This is dark, set in the game's own faces, and lists things that were built
-   with an honest state on each one - including the ones with no state recorded.
+   The layout follows matthewnpark.com, measured at 1280x800 on 14 Sept 2026:
+   a wordmark top left and short text links top right at a 32px margin; a list
+   with no rules or panels where every row is a grey mono date and one 12px
+   line, 16px tall, rows 32px apart, 104px from date to text; the key word in
+   each line underlined as a link; a large thin outline monogram behind it all;
+   a footer bar with the year on the left and a live clock on the right. What
+   stays ours: the dark ground, the game's faces, "Starts <repo>" rows with an
+   honest state on each, and a footer that says when the numbers were read.
    ------------------------------------------------------------------------- */
 :root{
   --field:#0F1310; --panel:#191E17; --line:#2C352A;
   --chalk:#F2F4E9; --dim:#8C9682;
   --hot:#E8FF3F; --vish:#E0523B; --amrit:#5FD08A;
-  /* vish as the game paints it is #E0523B, which measures 4.39:1 on the
-     panel and fails AA at the 10px a state label is set in. Same hue (8),
-     same saturation, lightness up .06: 5.20:1. The game keeps its colour;
-     small text gets the one you can actually read. */
+  /* vish as the game paints it measures under AA at 10px; same hue, a touch
+     lighter, so the paused label can actually be read. */
   --vish-text:#E46955;
 
   --display:Anton,"Arial Narrow",sans-serif;
   --ui:"Instrument Sans",system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
 
+  --ease:cubic-bezier(.2,.8,.2,1);
   --r:6px;
-  --gut:clamp(18px,4vw,34px);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--field);color:var(--chalk);font-family:var(--ui);
-  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
-  padding:0 0 5rem}
+  font-size:12px;line-height:16px;letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased}
 a{color:inherit}
-.wrap{max-width:940px;margin:0 auto;padding:0 var(--gut)}
 ::selection{background:var(--hot);color:var(--field)}
 :focus-visible{outline:2px solid var(--hot);outline-offset:3px}
 
-/* ---- masthead ---------------------------------------------------------- */
-header{padding:clamp(3rem,9vw,6.5rem) 0 2.2rem}
-h1{font-family:var(--display);font-weight:400;margin:0;
-  font-size:clamp(3.4rem,13vw,7.2rem);line-height:.86;letter-spacing:-.015em;
-  text-transform:uppercase}
-h1 .dot{color:var(--hot)}
-.tag{font-family:var(--mono);font-size:12px;letter-spacing:-.01em;
-  color:var(--dim);margin:1.4rem 0 0;max-width:46ch}
-.tag b{color:var(--chalk);font-weight:400}
-.links{display:flex;flex-wrap:wrap;gap:0 1.35rem;margin-top:1.3rem;
-  font-family:var(--mono);font-size:12px}
-.links a{color:var(--dim);text-decoration:none;border-bottom:1px solid var(--line);
-  padding-bottom:2px;transition:color 120ms ease,border-color 120ms ease}
-@media (hover:hover){.links a:hover{color:var(--hot);border-color:var(--hot)}}
+/* ---- the monogram: thin outline, behind everything, never in the way ---- */
+.monogram{position:fixed;right:7vw;top:50%%;transform:translateY(-52%%);
+  font-family:var(--display);font-size:min(52vh,36vw);line-height:.8;
+  letter-spacing:.02em;color:transparent;-webkit-text-stroke:1px var(--hot);
+  opacity:.28;pointer-events:none;user-select:none;z-index:0}
 
-/* ---- the counted strip. Every figure here is generated, which is the
-        point of it being on the page at all. ---------------------------- */
-.counts{background:var(--panel);border-radius:var(--r);padding:1.1rem 1.2rem;
-  display:flex;flex-wrap:wrap;gap:.4rem 2.4rem;font-family:var(--mono);
-  font-size:12px;color:var(--dim);margin-bottom:2.6rem}
-.counts b{color:var(--hot);font-weight:400}
-.counts span{white-space:nowrap}
+.page{position:relative;z-index:1;min-height:100vh;display:flex;
+  flex-direction:column;padding:32px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
 
-/* ---- the ledger -------------------------------------------------------- */
-h2{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--dim);margin:0 0 .7rem;padding-left:.1rem}
+.word{font-family:var(--display);font-size:24px;line-height:24px;
+  text-transform:uppercase;letter-spacing:.01em;text-decoration:none}
+.word .dot{color:var(--hot)}
+.links{display:flex;gap:22px;font-family:var(--mono);font-size:12px}
+/* The codes are 16px tall, which is a missed tap on a phone. Padding with an
+   equal negative margin gives each one a 44px hit area without moving a pixel
+   of the layout. */
+.links a{text-decoration:none;color:var(--chalk);transition:color 120ms ease;
+  display:inline-block;padding:14px 4px;margin:-14px -4px}
+@media (hover:hover){.links a:hover{color:var(--hot)}}
+
+main{flex:1;padding:40px 0 32px}
+
+/* The one line of introduction, which opens into the three rules. */
+.about{margin:0 0 32px;max-width:600px}
+.about summary{cursor:pointer;color:var(--dim);list-style:none;width:fit-content}
+.about summary::-webkit-details-marker{display:none}
+.about summary::after{content:" +";color:var(--hot)}
+.about[open] summary::after{content:" \\2212"}
+.rules{display:grid;gap:12px;margin-top:16px}
+.rule h3{font:700 12px/16px var(--mono);margin:0;color:var(--chalk)}
+.rule p{margin:2px 0 0;color:var(--dim);max-width:60ch}
+
+/* ---- the ledger ---------------------------------------------------------- */
 ul{list-style:none;margin:0;padding:0}
-.ledger{background:var(--panel);border-radius:var(--r);padding:0 1.2rem;
-  overflow:hidden}
-.row{display:grid;grid-template-columns:4.6rem minmax(0,1fr) 7.4rem;
-  gap:0 1.2rem;align-items:start;padding:1.05rem 0;
-  border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:0}
-time{font-family:var(--mono);font-size:12px;color:var(--dim);
-  font-variant-numeric:tabular-nums;padding-top:.12rem}
-.nm{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--chalk);
-  text-decoration:none;letter-spacing:-.02em}
-@media (hover:hover){.nm:hover{color:var(--hot)}}
+.ledger{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;align-items:baseline;gap:104px;min-width:0;
+  animation:rise .5s var(--ease) both;animation-delay:calc(var(--i) * 35ms)}
+time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.what{margin:0;min-width:0;max-width:min(78ch,58vw);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;color:var(--chalk)}
+.what > a:not(.live){text-decoration:underline;text-decoration-color:var(--dim);
+  text-underline-offset:3px;transition:color 120ms ease;
+  padding:8px 0;margin:-8px 0}  /* 32px tap height: the most rows 32px apart allow without overlap */
+@media (hover:hover){.what > a:not(.live):hover{color:var(--hot);
+  text-decoration-color:var(--hot)}}
 .live{font-family:var(--mono);font-size:10px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--field);background:var(--amrit);
-  border-radius:3px;padding:1px 5px;margin-left:.55rem;text-decoration:none;
-  vertical-align:1.5px}
-.desc{margin:.2rem 0 0;font-size:14px;color:var(--dim);max-width:60ch}
-.note{display:block;font-family:var(--mono);font-size:11px;color:var(--dim);
-  opacity:.72;margin-top:.35rem;max-width:60ch}
-.state{font-family:var(--mono);font-size:10px;letter-spacing:.12em;
-  text-align:right;padding-top:.24rem;white-space:nowrap}
+  border-radius:3px;padding:1px 5px;margin-left:6px;text-decoration:none;line-height:1}
+/* line-height:1 on the small inline labels, or their own line box stretches
+   the 16px row to 17 and the 32px rhythm drifts to 33. Measured, not assumed. */
+.state{font-family:var(--mono);font-size:10px;line-height:1;letter-spacing:.12em;margin-left:12px}
 .s-ship{color:var(--dim)}
 .s-build{color:var(--hot)}
 .s-pause{color:var(--vish-text)}
-/* The honest 'I have not written this down' is the label most worth
-   seeing, so it is the brightest state on the board rather than the
-   faintest. It was --line at 1.33:1, which is a way of hiding it. */
+/* The honest 'I have not written this down' is the brightest state, not the
+   faintest. Hiding it would be the opposite of the point. */
 .s-none{color:var(--chalk)}
-.s-mark{color:var(--hot)}
-.mark .what{margin:0;font-size:14px;color:var(--chalk);padding-top:.1rem}
-.mark{padding:.78rem 0}
+.desc{color:var(--dim);margin-left:12px}
 
-/* ---- how I work -------------------------------------------------------- */
-.rules{display:grid;gap:1px;background:var(--line);border-radius:var(--r);
-  overflow:hidden;margin-top:2.8rem}
-.rule{background:var(--panel);padding:1.25rem 1.2rem}
-.rule h3{font-family:var(--mono);font-size:13px;font-weight:700;margin:0 0 .35rem;
-  letter-spacing:-.02em;color:var(--chalk)}
-.rule p{margin:0;font-size:14px;color:var(--dim);max-width:64ch}
+/* ---- footer bar ---------------------------------------------------------- */
+.foot{color:var(--dim);flex-wrap:wrap}
+.foot .mid{text-align:center}
+.foot b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
 
-/* ---- stamp ------------------------------------------------------------- */
-footer{margin-top:2.4rem;font-family:var(--mono);font-size:11px;color:var(--dim);
-  display:flex;flex-wrap:wrap;gap:.3rem 1.6rem;padding-left:.1rem}
-footer b{color:var(--chalk);font-weight:400}
+@keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.row{animation:none}}
 
 @media (max-width:640px){
-  .row{grid-template-columns:minmax(0,1fr) auto;gap:.1rem .9rem}
-  time{grid-column:1;grid-row:1}
-  .state{grid-column:2;grid-row:1;text-align:right}
-  .mid{grid-column:1/-1;grid-row:2;margin-top:.25rem}
+  .page{padding:20px}
+  .row{gap:20px}
+  .what{max-width:none}
+  .desc{display:none}
+  .links{gap:14px}
+  .foot{flex-direction:column;align-items:flex-start;gap:6px}
+  .foot .mid{text-align:left}
+  .monogram{right:-6vw;font-size:58vw;opacity:.18}
 }
 </style>
 
-<div class="wrap">
-<header>
-  <h1>Gokul&nbsp;Sai<span class="dot">.</span></h1>
-  <p class="tag">I build tools that check whether something is true before you
-    act on it. <b>A zero means two things: nothing was there, or I could not
-    look.</b> Most of what is below exists to tell those apart.</p>
+<div class="monogram" aria-hidden="true">GS</div>
+<div class="page">
+<header class="bar">
+  <a class="word" href="./">Gokul<span class="dot">.</span></a>
   <nav class="links">%(links)s</nav>
 </header>
 
-<div class="counts">
-  <span><b>%(rate)s</b></span>
-  <span>%(nlive)s live</span>
-  <span>%(langline)s</span>
-</div>
+<main>
+<details class="about">
+  <summary>%(tagline)s</summary>
+  <div class="rules">
+%(rules)s
+  </div>
+</details>
 
-<h2>Built, newest first</h2>
 <ul class="ledger">
 %(rows)s
 </ul>
+</main>
 
-<h2 style="margin-top:2.8rem">How I work</h2>
-<div class="rules">
-%(rules)s
-</div>
-
-<footer>
-  <span>Read from the GitHub API <b>%(stamp)s</b> (%(source)s)</span>
-  <span>%(n)s projects, %(nunrec)s with no state recorded</span>
-  <span>%(span)s</span>
+<footer class="bar foot">
+  <span>&copy; %(year)s Gokul Sai</span>
+  <span class="mid">%(rate)s &middot; Read from the GitHub API %(stamp)s (%(source)s)%(unrec)s</span>
+  <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
 </footer>
 </div>
-"""
 
+<script>
+/* A live Hyderabad clock, bottom right. Hidden without JavaScript rather than
+   showing a time that never moves. */
+(function () {
+  var wrap = document.getElementById("clock-wrap");
+  var el = document.getElementById("clock");
+  if (!wrap || !el || !window.Intl) return;
+  var fmt = new Intl.DateTimeFormat("en-GB", {timeZone: "Asia/Kolkata",
+    hour: "2-digit", minute: "2-digit", hour12: false});
+  function tick() { el.textContent = fmt.format(new Date()); }
+  tick();
+  wrap.hidden = false;
+  setInterval(tick, 15000);
+})();
+</script>
+"""
 
 def check():
     """Every case is one the real data produces."""
@@ -551,7 +562,15 @@ def check():
     # No avatar, no og:image tag at all - never a preview pointing nowhere.
     assert "og:image" not in html, "no avatar means no preview picture tag"
 
-    print("  22 checks pass")
+    # Repo rows use the one verb the created date can vouch for.
+    assert re.search(r'Starts <a href="u/a">a</a>', html), "build rows read 'Starts <repo>'"
+    # The monogram is decoration and must never be announced or clicked.
+    assert '<div class="monogram" aria-hidden="true">' in html, "monogram is aria-hidden"
+    # The clock starts hidden, so a page without JavaScript never shows a
+    # frozen time.
+    assert '<span id="clock-wrap" hidden>' in html, "clock is hidden until JS runs"
+
+    print("  25 checks pass")
 
 
 if __name__ == "__main__":
