@@ -23,7 +23,7 @@ import urllib.error
 import urllib.request
 from datetime import date, datetime, timezone
 
-USER = "gokulsai1004-create"
+USER = "VGokulsai"
 API = "https://api.github.com/users/%s/repos?per_page=100" % USER
 CACHE = "repos.json"
 OUT = "index.html"
@@ -69,8 +69,8 @@ MILESTONES = [
 # have this yet" and it is left off the page rather than shipped dead.
 LINKS = [
     ("GitHub",       "https://github.com/%s" % USER),
-    ("Journal",      "https://%s.github.io/journal/" % USER),
-    ("Out Baby Out", "https://%s.github.io/outbabyout/" % USER),
+    ("Journal",      "https://%s.github.io/journal/" % USER.lower()),
+    ("Out Baby Out", "https://%s.github.io/outbabyout/" % USER.lower()),
     ("Instagram",    "https://instagram.com/gokulsai_2010"),
     ("LinkedIn",     None),
     ("Email",        "mailto:gokulsai1004@gmail.com"),
@@ -131,7 +131,7 @@ def projects(repos):
             "lang": r.get("language") or "",
             "pages": bool(r.get("has_pages")),
             "url": r["html_url"],
-            "live": "https://%s.github.io/%s/" % (USER, r["name"]) if r.get("has_pages") else None,
+            "live": "https://%s.github.io/%s/" % (USER.lower(), r["name"]) if r.get("has_pages") else None,
             "state": state,
             "note": note,
         })
@@ -223,7 +223,7 @@ def render(ps, source, avatar=None):
           '<meta property="og:title" content="Gokul Sai">\n'
           '<meta property="og:description" content="%s">\n'
           '<meta property="og:url" content="https://%s.github.io/portfolio/">'
-          % (esc(TAGLINE), USER))
+          % (esc(TAGLINE), USER.lower()))
     if avatar:
         og += ('\n<meta property="og:image" content="%s">\n'
                '<meta name="twitter:card" content="summary">' % esc(avatar))
