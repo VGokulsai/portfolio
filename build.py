@@ -212,8 +212,21 @@ def esc(s):
              .replace('"', "&quot;"))
 
 
-def render(ps, source):
+def render(ps, source, avatar=None):
     r = rate(ps)
+    # What Linktree, WhatsApp and Instagram show when this page's link is
+    # pasted: a title, one line, and a picture. None of them read the page
+    # itself, only these tags. The picture is the GitHub avatar from the API
+    # payload, so it follows the avatar. No avatar means no og:image tag at
+    # all, rather than a preview pointing at nothing.
+    og = ('<meta property="og:type" content="website">\n'
+          '<meta property="og:title" content="Gokul Sai">\n'
+          '<meta property="og:description" content="%s">\n'
+          '<meta property="og:url" content="https://%s.github.io/portfolio/">'
+          % (esc(TAGLINE), USER))
+    if avatar:
+        og += ('\n<meta property="og:image" content="%s">\n'
+               '<meta name="twitter:card" content="summary">' % esc(avatar))
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     langs = {}
     for p in ps:
@@ -279,12 +292,17 @@ def render(ps, source):
         "user": USER,
         "span": ("%s to %s" % (r["first"].isoformat(), r["last"].isoformat())) if r else "",
         "links": linkrow,
+        "tagline": esc(TAGLINE),
+        "og": og,
     }
 
 
+TAGLINE = "I build tools that check whether something is true before you act on it. Hyderabad."
+
 TEMPLATE = """<title>Gokul Sai</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="I build tools that check whether something is true before you act on it. Hyderabad.">
+<meta name="description" content="%(tagline)s">
+%(og)s
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
@@ -524,7 +542,16 @@ def check():
             assert _name in html, (
                 "%s has a url and must reach the page" % _name)
 
-    print("  19 checks pass")
+    # Link previews. Linktree builds the thumbnail and title from these tags.
+    withpic = render(ps, "test", "https://avatars.example/u/1?v=4")
+    assert '<meta property="og:image" content="https://avatars.example/u/1?v=4">' in withpic, \
+        "the avatar becomes the preview picture"
+    assert 'property="og:title"' in withpic and 'property="og:description"' in withpic, \
+        "a preview needs a title and a line, not just a picture"
+    # No avatar, no og:image tag at all - never a preview pointing nowhere.
+    assert "og:image" not in html, "no avatar means no preview picture tag"
+
+    print("  22 checks pass")
 
 
 if __name__ == "__main__":
@@ -537,8 +564,10 @@ if __name__ == "__main__":
         sys.exit(0)
     repos, source = fetch(offline="--offline" in sys.argv)
     ps = projects(repos)
+    avatar = next((r["owner"]["avatar_url"] for r in repos
+                   if (r.get("owner") or {}).get("avatar_url")), None)
     with io.open(OUT, "w", encoding="utf-8", newline="\n") as f:
-        f.write(render(ps, source))
+        f.write(render(ps, source, avatar))
     miss = [p["name"] for p in ps if not p["state"]]
     print("wrote %s from %s: %d projects, %d live"
           % (OUT, source, len(ps), len([p for p in ps if p["live"]])))
