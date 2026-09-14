@@ -99,6 +99,9 @@ time{font-family:var(--mono);font-size:12px;color:var(--dim);
    seeing, so it is the brightest state on the board rather than the
    faintest. It was --line at 1.33:1, which is a way of hiding it. */
 .s-none{color:var(--chalk)}
+.s-mark{color:var(--hot)}
+.mark .what{margin:0;font-size:14px;color:var(--chalk);padding-top:.1rem}
+.mark{padding:.78rem 0}
 
 /* ---- how I work -------------------------------------------------------- */
 .rules{display:grid;gap:1px;background:var(--line);border-radius:var(--r);
@@ -127,12 +130,7 @@ footer b{color:var(--chalk);font-weight:400}
   <p class="tag">I build tools that check whether something is true before you
     act on it. <b>A zero means two things: nothing was there, or I could not
     look.</b> Most of what is below exists to tell those apart.</p>
-  <nav class="links">
-    <a href="https://github.com/gokulsai1004-create">GitHub</a>
-    <a href="https://gokulsai1004-create.github.io/journal/">Journal</a>
-    <a href="https://gokulsai1004-create.github.io/outbabyout/">Out Baby Out</a>
-    <a href="mailto:gokulsai1004@gmail.com">Email</a>
-  </nav>
+  <nav class="links"><a href="https://github.com/gokulsai1004-create">GitHub</a><a href="https://gokulsai1004-create.github.io/journal/">Journal</a><a href="https://gokulsai1004-create.github.io/outbabyout/">Out Baby Out</a><a href="mailto:gokulsai1004@gmail.com">Email</a></nav>
 </header>
 
 <div class="counts">
@@ -155,6 +153,7 @@ footer b{color:var(--chalk);font-weight:400}
 <li class="row"><time datetime="2026-09-01">2026.09.01</time><div class="mid"><a class="nm" href="https://github.com/gokulsai1004-create/publicsearch">publicsearch</a><p class="desc">Search five public sources with no API key - and know when one of them could not look. A blocked source is never an empty result.</p><span class="note">The blocked-is-not-empty rule started here.</span></div><span class="state s-ship">SHIPPED</span></li>
 <li class="row"><time datetime="2026-08-30">2026.08.30</time><div class="mid"><a class="nm" href="https://github.com/gokulsai1004-create/painpoint-finder">painpoint-finder</a><p class="desc">Describe what you want to build. Searches six public sources for people who actually have that problem, pulls out whoever already shipped it, and drafts an opener you edit and send yourself. Runs as a Claude Code skill or a CLI. No API key.</p><span class="note">Used it on five of my own ideas before anyone else saw it.</span></div><span class="state s-ship">SHIPPED</span></li>
 <li class="row"><time datetime="2026-08-12">2026.08.12</time><div class="mid"><a class="nm" href="https://github.com/gokulsai1004-create/cloud-pet">cloud-pet</a><p class="desc">A pixel companion that floats on top of your screen, reads CPU/RAM/battery straight from the Windows API, and tracks how long you spend in AI chats. Zero dependencies - pure Python standard library.</p><span class="note">Measured 14x cheaper once stripped to the standard library.</span></div><span class="state s-ship">SHIPPED</span></li>
+<li class="row mark"><time datetime="2025-08-08">2025.08.08</time><div class="mid"><p class="what">Opened a GitHub account</p></div><span class="state s-mark">&middot;</span></li>
 </ul>
 
 <h2 style="margin-top:2.8rem">How I work</h2>
@@ -163,7 +162,7 @@ footer b{color:var(--chalk);font-weight:400}
 </div>
 
 <footer>
-  <span>Read from the GitHub API <b>2026-09-14 03:31 UTC</b> (live)</span>
+  <span>Read from the GitHub API <b>2026-09-14 03:50 UTC</b> (live)</span>
   <span>12 projects, 0 with no state recorded</span>
   <span>2026-08-12 to 2026-09-12</span>
 </footer>

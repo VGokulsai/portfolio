@@ -47,6 +47,33 @@ STATE = {
 
 SKIP = {USER}  # the profile repo is not a project
 
+# The other strand of the ledger: things that happened that are not a repo.
+#
+# Everything here has to be true and has to have already happened. Only the
+# two below can be read from the API, so only those two ship. Add yours in
+# the same shape - date first, past tense, one line, no adjectives:
+#
+#     ("2026-09-21", "Turned 16"),
+#     ("2026-08-31", "Applied to Axiom Pathways"),
+#
+# Do not add anything you are still waiting on. The page says what was done,
+# never what was hoped for, and a milestone that has not happened yet is the
+# one thing on here that could not be checked.
+MILESTONES = [
+    ("2025-08-08", "Opened a GitHub account"),
+]
+
+# One table so a handle is added in one place. url of None means "I do not
+# have this yet" and it is left off the page rather than shipped dead.
+LINKS = [
+    ("GitHub",       "https://github.com/%s" % USER),
+    ("Journal",      "https://%s.github.io/journal/" % USER),
+    ("Out Baby Out", "https://%s.github.io/outbabyout/" % USER),
+    ("Instagram",    None),
+    ("LinkedIn",     None),
+    ("Email",        "mailto:gokulsai1004@gmail.com"),
+]
+
 # What I actually believe, kept to the three that changed how I build.
 RULES = [
     ("A zero means two things",
@@ -182,10 +209,27 @@ def render(ps, source):
     langline = " · ".join("%s %d" % (k, v) for k, v in
                           sorted(langs.items(), key=lambda kv: -kv[1]))
     live = [p for p in ps if p["live"]]
+    linkrow = "".join('<a href="%s">%s</a>' % (esc(u), esc(n))
+                      for n, u in LINKS if u)
     unrecorded = [p for p in ps if not p["state"]]
 
+    entries = [dict(p, kind="build") for p in ps]
+    entries += [{"kind": "mark", "created": d, "name": t, "desc": "",
+                 "note": None, "state": None, "live": None, "url": None}
+                for d, t in MILESTONES]
+    entries.sort(key=lambda e: e["created"], reverse=True)
+
     rows = []
-    for p in ps:
+    for p in entries:
+        if p["kind"] == "mark":
+            rows.append(
+                '<li class="row mark">'
+                '<time datetime="%s">%s</time>'
+                '<div class="mid"><p class="what">%s</p></div>'
+                '<span class="state s-mark">&middot;</span>'
+                '</li>' % (p["created"], p["created"].replace("-", "."),
+                             esc(p["name"])))
+            continue
         st = p["state"] or "NOT RECORDED"
         cls = {"SHIPPED": "s-ship", "BUILDING": "s-build",
                "PAUSED": "s-pause"}.get(p["state"], "s-none")
@@ -221,6 +265,7 @@ def render(ps, source):
         "source": source,
         "user": USER,
         "span": ("%s to %s" % (r["first"].isoformat(), r["last"].isoformat())) if r else "",
+        "links": linkrow,
     }
 
 
@@ -325,6 +370,9 @@ time{font-family:var(--mono);font-size:12px;color:var(--dim);
    seeing, so it is the brightest state on the board rather than the
    faintest. It was --line at 1.33:1, which is a way of hiding it. */
 .s-none{color:var(--chalk)}
+.s-mark{color:var(--hot)}
+.mark .what{margin:0;font-size:14px;color:var(--chalk);padding-top:.1rem}
+.mark{padding:.78rem 0}
 
 /* ---- how I work -------------------------------------------------------- */
 .rules{display:grid;gap:1px;background:var(--line);border-radius:var(--r);
@@ -353,12 +401,7 @@ footer b{color:var(--chalk);font-weight:400}
   <p class="tag">I build tools that check whether something is true before you
     act on it. <b>A zero means two things: nothing was there, or I could not
     look.</b> Most of what is below exists to tell those apart.</p>
-  <nav class="links">
-    <a href="https://github.com/%(user)s">GitHub</a>
-    <a href="https://%(user)s.github.io/journal/">Journal</a>
-    <a href="https://%(user)s.github.io/outbabyout/">Out Baby Out</a>
-    <a href="mailto:gokulsai1004@gmail.com">Email</a>
-  </nav>
+  <nav class="links">%(links)s</nav>
 </header>
 
 <div class="counts">
@@ -442,7 +485,26 @@ def check():
     assert state_contrast(html)["s-none"] >= 10, \
         "NOT RECORDED must be the loudest state, not the quietest"
 
-    print("  13 checks pass")
+    # Both strands land in one list, ordered by date across both of them.
+    dates = re.findall(r'<time datetime="([0-9-]+)"', html)
+    assert dates == sorted(dates, reverse=True), ("one timeline, newest first", dates)
+    assert len(dates) == len(ps) + len(MILESTONES), "every row reaches the page"
+    # A milestone has no state badge and no repo link - that is the only
+    # thing separating the two kinds of row.
+    assert html.count('class="row mark"') == len(MILESTONES)
+    # A link with no url is left off rather than shipped dead. Derived from the
+    # table rather than naming a handle, so it stays correct the day one is
+    # actually added - the previous version of this assert was satisfied by
+    # either branch being true and could not fail.
+    for _name, _url in LINKS:
+        if _url is None:
+            assert _name not in html, (
+                "%s has no url yet and must not reach the page" % _name)
+        else:
+            assert _name in html, (
+                "%s has a url and must reach the page" % _name)
+
+    print("  16 checks pass")
 
 
 if __name__ == "__main__":
