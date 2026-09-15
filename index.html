@@ -64,13 +64,14 @@ a{color:inherit}
 
 main{flex:1;padding:40px 0 32px}
 
-/* The one line of introduction, which opens into the three rules. */
-.about{margin:0 0 32px;max-width:600px}
-.about summary{cursor:pointer;color:var(--dim);list-style:none;width:fit-content}
-.about summary::-webkit-details-marker{display:none}
-.about summary::after{content:" +";color:var(--hot)}
-.about[open] summary::after{content:" \2212"}
-.rules{display:grid;gap:12px;margin-top:16px}
+/* The intro paragraph and the three rules, kept from the first version of
+   this page and shown in full rather than folded behind a click. */
+.tag{margin:0 0 32px;max-width:56ch;color:var(--dim)}
+.tag b{color:var(--chalk);font-weight:500}
+.how{margin-top:40px;max-width:600px}
+.how h2{font:400 10px/16px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 12px}
+.rules{display:grid;gap:12px}
 .rule h3{font:700 12px/16px var(--mono);margin:0;color:var(--chalk)}
 .rule p{margin:2px 0 0;color:var(--dim);max-width:60ch}
 
@@ -111,25 +112,30 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 </header>
 
 <main>
-<details class="about">
-  <summary>I build tools that check whether something is true before you act on it. Hyderabad.</summary>
-  <div class="rules">
-<div class="rule"><h3>A zero means two things</h3><p>Nothing was there is a result. I could not look is not. Any count that cannot tell you which one it is has told you nothing.</p></div><div class="rule"><h3>Never type a number that can be read</h3><p>The project count at the bottom was read from the API a moment ago, and the stamp says when. Counts of repos, tests and sources all go stale.</p></div><div class="rule"><h3>A passing test proves nothing until you have watched it fail</h3><p>Break it, see it go red, put it back. Two of mine were passing while checking nothing at all, and a green run never said so.</p></div>
-  </div>
-</details>
+<p class="tag">I build tools that check whether something is true before you
+  act on it. <b>A zero means two things: nothing was there, or I could not
+  look.</b> Most of what I build exists to tell those apart.</p>
 
 <ul class="ledger">
 <li class="row" style="--i:0"><time datetime="2025-11-22">11.22.25</time><p class="what">Wins an MUN</p></li>
 <li class="row" style="--i:1"><time datetime="2025-08-08">08.08.25</time><p class="what">Opens a GitHub account</p></li>
 <li class="row" style="--i:2"><time datetime="2025-07-12">07.12.25</time><p class="what">Represents Hyderabad in a football match</p></li>
-<li class="row" style="--i:3"><time datetime="2025-04-19">04.19.25</time><p class="what">Plays his first football match</p></li>
-<li class="row" style="--i:4"><time datetime="2025-03-09">03.09.25</time><p class="what">Gets his first laptop</p></li>
+<li class="row" style="--i:3"><time datetime="2025-03-09">03.09.25</time><p class="what">Gets his first laptop</p></li>
+<li class="row" style="--i:4"><time datetime="2023-04-19">04.19.23</time><p class="what">Starts learning guitar</p></li>
+<li class="row" style="--i:5"><time datetime="2023-04-19">04.19.23</time><p class="what">Plays his first football match</p></li>
 </ul>
+
+<section class="how">
+  <h2>How I work</h2>
+  <div class="rules">
+<div class="rule"><h3>A zero means two things</h3><p>Nothing was there is a result. I could not look is not. Any count that cannot tell you which one it is has told you nothing.</p></div><div class="rule"><h3>Never type a number that can be read</h3><p>The project count at the bottom was read from the API a moment ago, and the stamp says when. Counts of repos, tests and sources all go stale.</p></div><div class="rule"><h3>A passing test proves nothing until you have watched it fail</h3><p>Break it, see it go red, put it back. Two of mine were passing while checking nothing at all, and a green run never said so.</p></div>
+  </div>
+</section>
 </main>
 
 <footer class="bar foot">
   <span>&copy; 2026 Gokul Sai</span>
-  <span class="mid"><a href="https://github.com/VGokulsai">13 projects in 31 days</a> &middot; Read from the GitHub API 2026-09-14 15:18 UTC (live)</span>
+  <span class="mid"><a href="https://github.com/VGokulsai">13 projects in 31 days</a> &middot; Read from the GitHub API 2026-09-15 13:26 UTC (live)</span>
   <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
 </footer>
 </div>

@@ -33,15 +33,17 @@ SKIP = {USER}  # the profile repo is not a project
 #     ("2026-09-21", "Turns 16"),
 #
 # Present tense is only the voice. Every entry must already have happened.
-# The dates on the laptop, both football entries and the MUN are approximate:
-# he confirmed on 14 Sept 2026 that all four happened in 2025 and chose
-# placeholder dates because he does not remember the exact days. Replace any of
-# them with the real date when it turns up. The GitHub date is exact.
+# Every date except the GitHub one is approximate. He confirmed each of these
+# happened but does not remember the exact days, so he chose placeholder dates
+# (14-15 Sept 2026): the laptop, representing Hyderabad and the MUN in 2025,
+# his first football match and starting guitar on the same day in 2023.
+# Replace any of them with the real date when it turns up.
 MILESTONES = [
     ("2025-11-22", "Wins an MUN"),
     ("2025-08-08", "Opens a GitHub account"),
     ("2025-07-12", "Represents Hyderabad in a football match"),
-    ("2025-04-19", "Plays his first football match"),
+    ("2023-04-19", "Plays his first football match"),
+    ("2023-04-19", "Starts learning guitar"),
     ("2025-03-09", "Gets his first laptop"),
 ]
 
@@ -251,13 +253,14 @@ a{color:inherit}
 
 main{flex:1;padding:40px 0 32px}
 
-/* The one line of introduction, which opens into the three rules. */
-.about{margin:0 0 32px;max-width:600px}
-.about summary{cursor:pointer;color:var(--dim);list-style:none;width:fit-content}
-.about summary::-webkit-details-marker{display:none}
-.about summary::after{content:" +";color:var(--hot)}
-.about[open] summary::after{content:" \\2212"}
-.rules{display:grid;gap:12px;margin-top:16px}
+/* The intro paragraph and the three rules, kept from the first version of
+   this page and shown in full rather than folded behind a click. */
+.tag{margin:0 0 32px;max-width:56ch;color:var(--dim)}
+.tag b{color:var(--chalk);font-weight:500}
+.how{margin-top:40px;max-width:600px}
+.how h2{font:400 10px/16px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 12px}
+.rules{display:grid;gap:12px}
 .rule h3{font:700 12px/16px var(--mono);margin:0;color:var(--chalk)}
 .rule p{margin:2px 0 0;color:var(--dim);max-width:60ch}
 
@@ -298,16 +301,20 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 </header>
 
 <main>
-<details class="about">
-  <summary>%(tagline)s</summary>
-  <div class="rules">
-%(rules)s
-  </div>
-</details>
+<p class="tag">I build tools that check whether something is true before you
+  act on it. <b>A zero means two things: nothing was there, or I could not
+  look.</b> Most of what I build exists to tell those apart.</p>
 
 <ul class="ledger">
 %(rows)s
 </ul>
+
+<section class="how">
+  <h2>How I work</h2>
+  <div class="rules">
+%(rules)s
+  </div>
+</section>
 </main>
 
 <footer class="bar foot">
@@ -363,7 +370,7 @@ def check():
 
     # Repos are not rows any more. Nothing from a repo reaches the list.
     ledger = html[html.index('<ul class="ledger">'):html.index("</ul>")]
-    assert "outbabyout" not in ledger and "Starts" not in ledger, "no repo rows"
+    assert "outbabyout" not in ledger and "Starts <a" not in ledger, "no repo rows"
     assert ledger.count('<li class="row"') == len(MILESTONES), "every milestone is a row"
 
     # Newest first, dates printed MM.DD.YY with ISO kept for machines.
@@ -409,7 +416,11 @@ def check():
     # frozen time.
     assert '<span id="clock-wrap" hidden>' in html, "clock is hidden until JS runs"
 
-    print("  21 checks pass")
+    # The intro paragraph and the rules are on the page, not folded away.
+    assert '<p class="tag">' in html and "<details" not in html, "intro and rules are visible"
+    assert html.count('<div class="rule">') == len(RULES), "every rule reaches the page"
+
+    print("  23 checks pass")
 
 
 if __name__ == "__main__":
