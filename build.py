@@ -59,14 +59,27 @@ LINKS = [
     ("Email",        "mailto:gokulsai1004@gmail.com"),
 ]
 
+# Three things to show a stranger first, in plain words. Picked 15 Sept 2026 as
+# his most finished public work: the live game, the main tool, the journal.
+# (kind, name, url, one plain line)
+WORK = [
+    ("Game", "Out Baby Out", "https://%s.github.io/outbabyout/" % USER.lower(),
+     "Real-life tag with a revive. Twenty minutes, two sides, nobody is out for good."),
+    ("Tool", "painpoint-finder", "https://github.com/%s/painpoint-finder" % USER,
+     "Searches six public sources for people who already have the problem you want "
+     "to solve, and drafts a first message you edit and send yourself."),
+    ("Writing", "Journal", "https://%s.github.io/journal/" % USER.lower(),
+     "What broke, what it cost, and what I would do differently."),
+]
+
 # What I actually believe, kept to the three that changed how I build.
 RULES = [
     ("A zero means two things",
      "Nothing was there is a result. I could not look is not. Any count that "
      "cannot tell you which one it is has told you nothing."),
     ("Never type a number that can be read",
-     "The project count at the bottom was read from the API a moment ago, and "
-     "the stamp says when. Counts of repos, tests and sources all go stale."),
+     "The project count on this page was read from GitHub, and the stamp at the "
+     "bottom says when. Counts of repos, tests and sources all go stale."),
     ("A passing test proves nothing until you have watched it fail",
      "Break it, see it go red, put it back. Two of mine were passing while "
      "checking nothing at all, and a green run never said so."),
@@ -156,15 +169,14 @@ def render(ps, source, avatar=None):
                '<meta name="twitter:card" content="summary">' % esc(avatar))
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-    # Short codes in the bar, the way matthewnpark.com sets X IN IG TT YT. The
-    # full name stays on the page as title and aria-label, so a screen reader
-    # and a hover both get "Out Baby Out" rather than "OBO".
-    codes = {"GitHub": "GH", "Journal": "JR", "Out Baby Out": "OBO",
-             "Instagram": "IG", "LinkedIn": "IN", "Email": "@"}
-    linkrow = "".join(
-        '<a href="%s" title="%s" aria-label="%s">%s</a>'
-        % (esc(u), esc(n), esc(n), esc(codes.get(n, n)))
-        for n, u in LINKS if u)
+    # Spelled out, not coded. GH and IG are guessable; JR and OBO mean nothing
+    # to someone who has never met him, and that is exactly who this is for.
+    linkrow = "".join('<a href="%s">%s</a>' % (esc(u), esc(n)) for n, u in LINKS if u)
+
+    work = "\n".join(
+        '<li class="row job"><span class="kind">%s</span><p class="what">'
+        '<a href="%s">%s</a> <span class="line">%s</span></p></li>'
+        % (esc(k), esc(u), esc(n), esc(line)) for k, n, u, line in WORK)
 
     rows = "\n".join(
         '<li class="row" style="--i:%d"><time datetime="%s">%s</time>'
@@ -175,10 +187,17 @@ def render(ps, source, avatar=None):
         '<div class="rule"><h3>%s</h3><p>%s</p></div>' % (esc(t), esc(b))
         for t, b in RULES)
 
-    ratebit = ("%d projects in %d days" % (r["n"], r["days"])) if r else "not enough to measure"
+    ratebit = ("%d projects in %d days" % (r["n"], r["days"])) if r else ""
+    # The one number a client cares about, said plainly at the top. With no
+    # rate to report the sentence is left out rather than filled with filler.
+    hire = ("<b>%s.</b> " % ratebit) if ratebit else ""
+    cache_note = " (from a saved copy, not live)" if source == "cache" else ""
 
     return TEMPLATE % {
         "rows": rows,
+        "work": work,
+        "hire": hire,
+        "cache_note": cache_note,
         "rules": rules,
         "rate": ratebit,
         "stamp": stamp,
@@ -256,11 +275,22 @@ main{flex:1;padding:40px 0 32px}
 
 /* The intro paragraph and the three rules, kept from the first version of
    this page and shown in full rather than folded behind a click. */
-.tag{margin:0 0 32px;max-width:56ch;color:var(--dim)}
+.tag{margin:0 0 12px;max-width:56ch;color:var(--dim)}
+.hire{margin:0 0 8px;color:var(--chalk)}
+.hire b{font-weight:500}
+.hire a,.what a{text-decoration:underline;text-decoration-color:var(--dim);
+  text-underline-offset:3px;transition:color 120ms ease,text-decoration-color 120ms ease}
+@media (hover:hover){.hire a:hover,.what a:hover{color:var(--hot);text-decoration-color:var(--hot)}}
 .tag b{color:var(--chalk);font-weight:500}
-.how{margin-top:40px;max-width:600px}
-.how h2{font:400 10px/16px var(--mono);letter-spacing:.14em;
+.sec{margin-top:32px}
+.how{max-width:600px}
+.sec h2{font:400 10px/16px var(--mono);letter-spacing:.14em;
   text-transform:uppercase;color:var(--dim);margin:0 0 12px}
+.work{display:flex;flex-direction:column;gap:16px}
+/* The kind column is as wide as a date, so Work and Timeline share one edge. */
+time,.kind{min-width:58px}
+.kind{flex:none;font-family:var(--mono);color:var(--dim)}
+.line{color:var(--dim)}
 .rules{display:grid;gap:12px}
 .rule h3{font:700 12px/16px var(--mono);margin:0;color:var(--chalk)}
 .rule p{margin:2px 0 0;color:var(--dim);max-width:60ch}
@@ -287,7 +317,10 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   .page{padding:20px}
   .row{gap:20px}
   .what{max-width:none}
-  .links{gap:14px}
+  header.bar{flex-wrap:wrap;row-gap:14px}
+  /* 28px between wrapped rows: each link has a 44px tap area on a 16px line,
+     so anything tighter lets a tap between rows land on the wrong link. */
+  .links{gap:28px 18px;flex-wrap:wrap}
   .foot{flex-direction:column;align-items:flex-start;gap:6px}
   .foot .mid{text-align:left}
   .monogram{right:-6vw;font-size:58vw;opacity:.18}
@@ -305,12 +338,23 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 <p class="tag">I build tools that check whether something is true before you
   act on it. <b>A zero means two things: nothing was there, or I could not
   look.</b> Most of what I build exists to tell those apart.</p>
+<p class="hire">%(hire)sWant something built? <a href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a></p>
 
-<ul class="ledger">
+<section class="sec">
+  <h2>Work</h2>
+  <ul class="work">
+%(work)s
+  </ul>
+</section>
+
+<section class="sec">
+  <h2>Timeline</h2>
+  <ul class="ledger">
 %(rows)s
-</ul>
+  </ul>
+</section>
 
-<section class="how">
+<section class="sec how">
   <h2>How I work</h2>
   <div class="rules">
 %(rules)s
@@ -320,7 +364,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 
 <footer class="bar foot">
   <span>&copy; %(year)s Gokul Sai</span>
-  <span class="mid"><a href="https://github.com/%(user)s">%(rate)s</a> &middot; Read from the GitHub API %(stamp)s (%(source)s)</span>
+  <span class="mid">Project count read from GitHub %(stamp)s%(cache_note)s</span>
   <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
 </footer>
 </div>
@@ -366,11 +410,11 @@ def check():
 
     html = render(ps, "test")
     # The stamp is what makes the one number on the page checkable.
-    assert "Read from the GitHub API" in html
+    assert "read from GitHub" in html
     assert "2 projects in 30 days" in html, "the footer count comes from the API data"
 
     # Repos are not rows any more. Nothing from a repo reaches the list.
-    ledger = html[html.index('<ul class="ledger">'):html.index("</ul>")]
+    ledger = html[html.index('<ul class="ledger">'):html.index("</ul>", html.index('<ul class="ledger">'))]
     assert "outbabyout" not in ledger and "Starts <a" not in ledger, "no repo rows"
     assert ledger.count('<li class="row"') == len(MILESTONES), "every milestone is a row"
 
@@ -422,7 +466,19 @@ def check():
     assert '<p class="tag">' in html and "<details" not in html, "intro and rules are visible"
     assert html.count('<div class="rule">') == len(RULES), "every rule reaches the page"
 
-    print("  23 checks pass")
+    # Work: every item reaches the page and links where it says it does.
+    wstart = html.index('<ul class="work">')
+    workhtml = html[wstart:html.index("</ul>", wstart)]
+    assert workhtml.count('<li class="row job"') == len(WORK), "every work item is shown"
+    assert all('href="%s"' % u in workhtml for _k, _n, u, _l in WORK), "work links go where they say"
+    # A stranger can reach him without decoding anything.
+    assert 'href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a>' in html, \
+        "the email is written out on the page"
+    assert ">OBO<" not in html and ">JR<" not in html and ">@<" not in html, "links are spelled out"
+    # A build from the saved copy says so on the page.
+    assert "saved copy" in render(ps, "cache") and "saved copy" not in html, "cache builds are labelled"
+
+    print("  28 checks pass")
 
 
 if __name__ == "__main__":

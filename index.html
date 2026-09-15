@@ -66,11 +66,22 @@ main{flex:1;padding:40px 0 32px}
 
 /* The intro paragraph and the three rules, kept from the first version of
    this page and shown in full rather than folded behind a click. */
-.tag{margin:0 0 32px;max-width:56ch;color:var(--dim)}
+.tag{margin:0 0 12px;max-width:56ch;color:var(--dim)}
+.hire{margin:0 0 8px;color:var(--chalk)}
+.hire b{font-weight:500}
+.hire a,.what a{text-decoration:underline;text-decoration-color:var(--dim);
+  text-underline-offset:3px;transition:color 120ms ease,text-decoration-color 120ms ease}
+@media (hover:hover){.hire a:hover,.what a:hover{color:var(--hot);text-decoration-color:var(--hot)}}
 .tag b{color:var(--chalk);font-weight:500}
-.how{margin-top:40px;max-width:600px}
-.how h2{font:400 10px/16px var(--mono);letter-spacing:.14em;
+.sec{margin-top:32px}
+.how{max-width:600px}
+.sec h2{font:400 10px/16px var(--mono);letter-spacing:.14em;
   text-transform:uppercase;color:var(--dim);margin:0 0 12px}
+.work{display:flex;flex-direction:column;gap:16px}
+/* The kind column is as wide as a date, so Work and Timeline share one edge. */
+time,.kind{min-width:58px}
+.kind{flex:none;font-family:var(--mono);color:var(--dim)}
+.line{color:var(--dim)}
 .rules{display:grid;gap:12px}
 .rule h3{font:700 12px/16px var(--mono);margin:0;color:var(--chalk)}
 .rule p{margin:2px 0 0;color:var(--dim);max-width:60ch}
@@ -97,7 +108,10 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   .page{padding:20px}
   .row{gap:20px}
   .what{max-width:none}
-  .links{gap:14px}
+  header.bar{flex-wrap:wrap;row-gap:14px}
+  /* 28px between wrapped rows: each link has a 44px tap area on a 16px line,
+     so anything tighter lets a tap between rows land on the wrong link. */
+  .links{gap:28px 18px;flex-wrap:wrap}
   .foot{flex-direction:column;align-items:flex-start;gap:6px}
   .foot .mid{text-align:left}
   .monogram{right:-6vw;font-size:58vw;opacity:.18}
@@ -108,34 +122,47 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 <div class="page">
 <header class="bar">
   <a class="word" href="./">Gokul<span class="dot">.</span></a>
-  <nav class="links"><a href="https://github.com/VGokulsai" title="GitHub" aria-label="GitHub">GH</a><a href="https://vgokulsai.github.io/journal/" title="Journal" aria-label="Journal">JR</a><a href="https://vgokulsai.github.io/outbabyout/" title="Out Baby Out" aria-label="Out Baby Out">OBO</a><a href="https://instagram.com/gokulsai_2010" title="Instagram" aria-label="Instagram">IG</a><a href="mailto:gokulsai1004@gmail.com" title="Email" aria-label="Email">@</a></nav>
+  <nav class="links"><a href="https://github.com/VGokulsai">GitHub</a><a href="https://vgokulsai.github.io/journal/">Journal</a><a href="https://vgokulsai.github.io/outbabyout/">Out Baby Out</a><a href="https://instagram.com/gokulsai_2010">Instagram</a><a href="mailto:gokulsai1004@gmail.com">Email</a></nav>
 </header>
 
 <main>
 <p class="tag">I build tools that check whether something is true before you
   act on it. <b>A zero means two things: nothing was there, or I could not
   look.</b> Most of what I build exists to tell those apart.</p>
+<p class="hire"><b>13 projects in 31 days.</b> Want something built? <a href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a></p>
 
-<ul class="ledger">
+<section class="sec">
+  <h2>Work</h2>
+  <ul class="work">
+<li class="row job"><span class="kind">Game</span><p class="what"><a href="https://vgokulsai.github.io/outbabyout/">Out Baby Out</a> <span class="line">Real-life tag with a revive. Twenty minutes, two sides, nobody is out for good.</span></p></li>
+<li class="row job"><span class="kind">Tool</span><p class="what"><a href="https://github.com/VGokulsai/painpoint-finder">painpoint-finder</a> <span class="line">Searches six public sources for people who already have the problem you want to solve, and drafts a first message you edit and send yourself.</span></p></li>
+<li class="row job"><span class="kind">Writing</span><p class="what"><a href="https://vgokulsai.github.io/journal/">Journal</a> <span class="line">What broke, what it cost, and what I would do differently.</span></p></li>
+  </ul>
+</section>
+
+<section class="sec">
+  <h2>Timeline</h2>
+  <ul class="ledger">
 <li class="row" style="--i:0"><time datetime="2023-04-19">04.19.23</time><p class="what">Plays his first football match</p></li>
 <li class="row" style="--i:1"><time datetime="2023-04-19">04.19.23</time><p class="what">Starts learning guitar</p></li>
 <li class="row" style="--i:2"><time datetime="2025-07-12">07.12.25</time><p class="what">Represents Hyderabad in a football match</p></li>
 <li class="row" style="--i:3"><time datetime="2025-07-26">07.26.25</time><p class="what">Gets his first laptop</p></li>
 <li class="row" style="--i:4"><time datetime="2025-08-08">08.08.25</time><p class="what">Opens a GitHub account</p></li>
 <li class="row" style="--i:5"><time datetime="2025-11-22">11.22.25</time><p class="what">Wins an MUN</p></li>
-</ul>
+  </ul>
+</section>
 
-<section class="how">
+<section class="sec how">
   <h2>How I work</h2>
   <div class="rules">
-<div class="rule"><h3>A zero means two things</h3><p>Nothing was there is a result. I could not look is not. Any count that cannot tell you which one it is has told you nothing.</p></div><div class="rule"><h3>Never type a number that can be read</h3><p>The project count at the bottom was read from the API a moment ago, and the stamp says when. Counts of repos, tests and sources all go stale.</p></div><div class="rule"><h3>A passing test proves nothing until you have watched it fail</h3><p>Break it, see it go red, put it back. Two of mine were passing while checking nothing at all, and a green run never said so.</p></div>
+<div class="rule"><h3>A zero means two things</h3><p>Nothing was there is a result. I could not look is not. Any count that cannot tell you which one it is has told you nothing.</p></div><div class="rule"><h3>Never type a number that can be read</h3><p>The project count on this page was read from GitHub, and the stamp at the bottom says when. Counts of repos, tests and sources all go stale.</p></div><div class="rule"><h3>A passing test proves nothing until you have watched it fail</h3><p>Break it, see it go red, put it back. Two of mine were passing while checking nothing at all, and a green run never said so.</p></div>
   </div>
 </section>
 </main>
 
 <footer class="bar foot">
   <span>&copy; 2026 Gokul Sai</span>
-  <span class="mid"><a href="https://github.com/VGokulsai">13 projects in 31 days</a> &middot; Read from the GitHub API 2026-09-15 13:32 UTC (live)</span>
+  <span class="mid">Project count read from GitHub 2026-09-15 13:38 UTC</span>
   <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
 </footer>
 </div>
