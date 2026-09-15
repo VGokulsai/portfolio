@@ -27,7 +27,7 @@ OUT = "index.html"
 
 SKIP = {USER}  # the profile repo is not a project
 
-# The page. Newest first, third person, present tense, one short line, no
+# The page. Oldest first, third person, present tense, one short line, no
 # adjectives - the way matthewnpark.com writes them:
 #
 #     ("2026-09-21", "Turns 16"),
@@ -35,7 +35,8 @@ SKIP = {USER}  # the profile repo is not a project
 # Present tense is only the voice. Every entry must already have happened.
 # Every date except the GitHub one is approximate. He confirmed each of these
 # happened but does not remember the exact days, so he chose placeholder dates
-# (14-15 Sept 2026): the laptop, representing Hyderabad and the MUN in 2025,
+# (14-15 Sept 2026): representing Hyderabad, the laptop and the MUN in 2025 -
+# the laptop placed just before the GitHub account because one led to the other -
 # his first football match and starting guitar on the same day in 2023.
 # Replace any of them with the real date when it turns up.
 MILESTONES = [
@@ -44,7 +45,7 @@ MILESTONES = [
     ("2025-07-12", "Represents Hyderabad in a football match"),
     ("2023-04-19", "Plays his first football match"),
     ("2023-04-19", "Starts learning guitar"),
-    ("2025-03-09", "Gets his first laptop"),
+    ("2025-07-26", "Gets his first laptop"),
 ]
 
 # One table so a handle is added in one place. url of None means "I do not
@@ -168,7 +169,7 @@ def render(ps, source, avatar=None):
     rows = "\n".join(
         '<li class="row" style="--i:%d"><time datetime="%s">%s</time>'
         '<p class="what">%s</p></li>' % (i, d, short_date(d), esc(t))
-        for i, (d, t) in enumerate(sorted(MILESTONES, reverse=True)))
+        for i, (d, t) in enumerate(sorted(MILESTONES)))  # oldest first: dates climb down the page
 
     rules = "".join(
         '<div class="rule"><h3>%s</h3><p>%s</p></div>' % (esc(t), esc(b))
@@ -373,10 +374,11 @@ def check():
     assert "outbabyout" not in ledger and "Starts <a" not in ledger, "no repo rows"
     assert ledger.count('<li class="row"') == len(MILESTONES), "every milestone is a row"
 
-    # Newest first, dates printed MM.DD.YY with ISO kept for machines.
+    # Oldest first, so the story reads in order and the month-first dates
+    # visibly climb. Dates print MM.DD.YY with ISO kept for machines.
     assert short_date("2026-09-12") == "09.12.26", short_date("2026-09-12")
     dates = re.findall(r'<time datetime="([0-9-]+)"', ledger)
-    assert dates == sorted(dates, reverse=True), ("newest first", dates)
+    assert dates == sorted(dates), ("oldest first", dates)
     assert ">%s<" % short_date(dates[0]) in ledger, "dates print as MM.DD.YY"
     # Milestones read like matthewnpark.com: third person, present tense.
     assert "Opens a GitHub account" in ledger and "Opened" not in ledger, \
