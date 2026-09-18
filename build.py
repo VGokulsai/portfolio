@@ -71,7 +71,7 @@ WORK = [
      "to solve, and drafts a first message you edit and send yourself."),
     ("Writing", "Journal", "https://%s.github.io/journal/" % USER.lower(),
      "What broke, what it cost, and what I would do differently."),
-    ("Paper", "Empty Is Not Unreachable", "https://doi.org/10.5281/zenodo.22828298",
+    ("Paper", "Empty Is Not Unreachable", "https://github.com/VGokulsai/falsezero/blob/master/PAPER.md",
      "Forty public sources measured: the four ways a program reports nothing found "
      "when it simply failed to look. Published, with a DOI."),
 ]
