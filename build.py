@@ -40,6 +40,7 @@ SKIP = {USER}  # the profile repo is not a project
 # led to the other - and his first football match in 2023.
 # Replace any of them with the real date when it turns up.
 MILESTONES = [
+    ("2026-09-18", "Publishes his first paper"),
     ("2025-11-22", "Wins an MUN"),
     ("2025-08-08", "Opens a GitHub account"),
     ("2025-07-12", "Represents Hyderabad in a football match"),
@@ -70,6 +71,9 @@ WORK = [
      "to solve, and drafts a first message you edit and send yourself."),
     ("Writing", "Journal", "https://%s.github.io/journal/" % USER.lower(),
      "What broke, what it cost, and what I would do differently."),
+    ("Paper", "Empty Is Not Unreachable", "https://doi.org/10.5281/zenodo.22828298",
+     "Forty public sources measured: the four ways a program reports nothing found "
+     "when it simply failed to look. Published, with a DOI."),
 ]
 
 # What I actually believe, kept to the three that changed how I build.
