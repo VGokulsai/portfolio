@@ -40,6 +40,8 @@ SKIP = {USER}  # the profile repo is not a project
 # led to the other - and his first football match in 2023.
 # Replace any of them with the real date when it turns up.
 MILESTONES = [
+    ("2026-09-28", "Publishes a reproduction of an IIIT-Hyderabad paper"),
+    ("2026-09-25", "Starts Banyan"),
     ("2026-09-18", "Publishes his first paper"),
     ("2025-11-22", "Wins an MUN"),
     ("2025-08-08", "Opens a GitHub account"),
@@ -53,6 +55,7 @@ MILESTONES = [
 # have this yet" and it is left off the page rather than shipped dead.
 LINKS = [
     ("GitHub",       "https://github.com/%s" % USER),
+    ("Banyan",       "https://banyanmakers.pages.dev"),
     ("Journal",      "https://%s.github.io/journal/" % USER.lower()),
     ("Out Baby Out", "https://%s.github.io/outbabyout/" % USER.lower()),
     ("Instagram",    "https://instagram.com/gokulsai_2010"),
@@ -64,8 +67,16 @@ LINKS = [
 # his most finished public work: the live game, the main tool, the journal.
 # (kind, name, url, one plain line)
 WORK = [
+    ("Community", "Banyan", "https://banyanmakers.pages.dev",
+     "A free page where young makers in India are seen for what they have shipped. "
+     "Every maker is checked by hand."),
     ("Game", "Out Baby Out", "https://%s.github.io/outbabyout/" % USER.lower(),
-     "Real-life tag with a revive. Twenty minutes, two sides, nobody is out for good."),
+     "Real-life tag with a revive, made so children in orphanages and children's homes "
+     "can have fun together. Twenty minutes, two sides, nobody is out for good."),
+    ("Paper", "Reproducing an IIIT-Hyderabad paper",
+     "https://github.com/VGokulsai/nllb-entity-mt/blob/master/paper/report-v1.pdf",
+     "Fine-tuned a translation model to get names right, as a SemEval-2025 paper did: "
+     "+5 BLEU on 5,338 sentences. Written up with a DOI."),
     ("Tool", "painpoint-finder", "https://github.com/%s/painpoint-finder" % USER,
      "Searches six public sources for people who already have the problem you want "
      "to solve, and drafts a first message you edit and send yourself."),
