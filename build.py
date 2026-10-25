@@ -95,6 +95,16 @@ with io.open("sketchbook/pages.json", encoding="utf-8") as _f:
 SKETCH_LINE = "My new sketchbook: a cast of characters with their own bios, and some fashion sketches."
 SKETCH_COVER = 2  # The Fool, taped on the cover like a sticker
 
+# Records in the crate (DEMO, 25 Oct 2026): the songs he named on 6 Oct, as
+# placeholders until he picks the real list. (title, artist, sleeve, ink)
+RECORDS = [
+    ("Shape of You", "Ed Sheeran", "#E8FF3F", "#0F1310"),
+    ("Kala Chashma", "Amar Arshi, Badshah, Neha Kakkar", "#E0523B", "#F2F4E9"),
+    ("Red Red", "", "#5FD08A", "#0F1310"),
+    ("Spanish songs", "", "#F2F4E9", "#0F1310"),
+    ("Next pick", "", "#2C352A", "#F2F4E9"),
+]
+
 # What I actually believe, kept to the three that changed how I build.
 RULES = [
     ("A zero means two things",
@@ -446,6 +456,15 @@ def closed_book(pre):
             % (pre, esc(SKETCH[0]["src"]), stick(1), stick(0), len(SKETCH), "<i></i>" * 11))
 
 
+def sleeves():
+    tilt = ("-3deg", "2deg", "-1deg", "3deg", "-2deg")
+    return "".join(
+        '<button class="sleeve" type="button" style="--i:%d;--tilt:%s;--c:%s;--ink:%s" data-title="%s" data-artist="%s"'
+        ' aria-label="Play %s"><span class="sleeve-face"><b>%s</b><i>%s</i></span></button>'
+        % (i, tilt[i % len(tilt)], c, ink, esc(t), esc(a), esc(t), esc(t), esc(a.split(",")[0]) if a else "&nbsp;")
+        for i, (t, a, c, ink) in enumerate(RECORDS))
+
+
 def render_art():
     # The page shares the home page's stylesheet and clock, lifted out of TEMPLATE
     # (whose % signs are doubled for formatting) so the two can never drift apart.
@@ -455,7 +474,7 @@ def render_art():
     pages = json.dumps([{"src": "../" + p["src"], "alt": p["alt"], "w": p["w"], "h": p["h"], "nobind": p.get("nobind", False)} for p in SKETCH]).replace("</", "<\\/")
     page = ART_TEMPLATE
     for key, val in (("style", style), ("clock", clock), ("links", links), ("book", closed_book("../")),
-                     ("line", esc(SKETCH_LINE)), ("n", str(len(SKETCH))), ("pages", pages),
+                     ("line", esc(SKETCH_LINE)), ("n", str(len(SKETCH))), ("pages", pages), ("sleeves", sleeves()), ("nrec", str(len(RECORDS))),
                      ("year", str(date.today().year))):
         page = page.replace("{{%s}}" % key, val)
     return page
@@ -471,6 +490,7 @@ ART_TEMPLATE = """<meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
 <link rel="stylesheet" href="../sketchbook/book.css">
+<link rel="stylesheet" href="../records/records.css">
 <style>{{style}}
 /* ---- the art page: words on the left, the book floating on the right ---- */
 .art{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);align-items:center;
@@ -484,6 +504,9 @@ ART_TEMPLATE = """<meta charset="utf-8">
   text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px}
 @media (hover:hover){.art .home:hover{color:var(--hot);text-decoration-color:var(--hot)}}
 .art .sketch3d{--bw:clamp(240px,26vw,340px)}
+.art h2.big{font:400 clamp(56px,8vw,120px)/.84 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:0 0 24px}
+.art h2.big .dot{color:var(--hot)}
+.records{min-height:auto;padding:24px 0 64px;border-top:1px solid var(--line)}
 .art .stage{padding:20px 48px 56px 24px}
 @media (max-width:640px){
   .art{grid-template-columns:1fr;gap:12px;min-height:0}
@@ -510,6 +533,26 @@ ART_TEMPLATE = """<meta charset="utf-8">
   </div>
   <div class="stage">{{book}}</div>
 </section>
+
+<section class="art records">
+  <div>
+    <h2 class="big">Records<span class="dot">.</span></h2>
+    <p class="tag">On repeat, no skips. Pick a record from the crate and it goes on the turntable.</p>
+    <p class="now"></p>
+  </div>
+  <div class="rec-stage">
+    <div class="crate">
+      <div class="crate-back"></div>
+      <div class="sleeves" style="--n:{{nrec}}">{{sleeves}}</div>
+      <div class="crate-front"><span>On repeat</span></div>
+    </div>
+    <div class="deck" aria-hidden="true">
+      <div class="platter"><div class="disc"><span class="hole"></span></div></div>
+      <div class="arm"><i></i><b></b></div>
+      <span class="knob"></span><span class="led"></span>
+    </div>
+  </div>
+</section>
 </main>
 
 <footer class="bar foot">
@@ -521,6 +564,7 @@ ART_TEMPLATE = """<meta charset="utf-8">
 {{clock}}
 <script type="application/json" id="sketch-pages">{{pages}}</script>
 <script src="../sketchbook/book.js" defer></script>
+<script src="../records/records.js" defer></script>
 """
 
 

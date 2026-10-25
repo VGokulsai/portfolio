@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
 <link rel="stylesheet" href="../sketchbook/book.css">
+<link rel="stylesheet" href="../records/records.css">
 <style>
 /* ----------------------------------------------------------------------------
    Palette and faces are Out Baby Out's, read out of that repo.
@@ -127,6 +128,9 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px}
 @media (hover:hover){.art .home:hover{color:var(--hot);text-decoration-color:var(--hot)}}
 .art .sketch3d{--bw:clamp(240px,26vw,340px)}
+.art h2.big{font:400 clamp(56px,8vw,120px)/.84 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:0 0 24px}
+.art h2.big .dot{color:var(--hot)}
+.records{min-height:auto;padding:24px 0 64px;border-top:1px solid var(--line)}
 .art .stage{padding:20px 48px 56px 24px}
 @media (max-width:640px){
   .art{grid-template-columns:1fr;gap:12px;min-height:0}
@@ -153,6 +157,26 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   </div>
   <div class="stage"><button class="sketch3d" type="button" data-page="1" aria-label="Open the sketchbook"><span class="b3"><span class="b3-back"></span><span class="b3-edge b3-right"></span><span class="b3-edge b3-top"></span><span class="b3-edge b3-bottom"></span><span class="b3-first"><img src="../sketchbook/01-fwends.webp" alt="" loading="lazy"></span><span class="b3-cover cv"><span class="cv-t">Sketch<br>book<b>.</b></span><span class="cv-st s2"><img src="../sketchbook/02-nigel.webp" alt="" loading="lazy"></span><span class="cv-st s1"><img src="../sketchbook/03-the-fool.webp" alt="" loading="lazy"></span><span class="cv-dot">10<br>pages</span><span class="cv-m">Gokul Sai &middot; vol. 01</span><span class="cv-band"></span></span><span class="b3-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="b3-shadow" aria-hidden="true"></span></button></div>
 </section>
+
+<section class="art records">
+  <div>
+    <h2 class="big">Records<span class="dot">.</span></h2>
+    <p class="tag">On repeat, no skips. Pick a record from the crate and it goes on the turntable.</p>
+    <p class="now"></p>
+  </div>
+  <div class="rec-stage">
+    <div class="crate">
+      <div class="crate-back"></div>
+      <div class="sleeves" style="--n:5"><button class="sleeve" type="button" style="--i:0;--tilt:-3deg;--c:#E8FF3F;--ink:#0F1310" data-title="Shape of You" data-artist="Ed Sheeran" aria-label="Play Shape of You"><span class="sleeve-face"><b>Shape of You</b><i>Ed Sheeran</i></span></button><button class="sleeve" type="button" style="--i:1;--tilt:2deg;--c:#E0523B;--ink:#F2F4E9" data-title="Kala Chashma" data-artist="Amar Arshi, Badshah, Neha Kakkar" aria-label="Play Kala Chashma"><span class="sleeve-face"><b>Kala Chashma</b><i>Amar Arshi</i></span></button><button class="sleeve" type="button" style="--i:2;--tilt:-1deg;--c:#5FD08A;--ink:#0F1310" data-title="Red Red" data-artist="" aria-label="Play Red Red"><span class="sleeve-face"><b>Red Red</b><i>&nbsp;</i></span></button><button class="sleeve" type="button" style="--i:3;--tilt:3deg;--c:#F2F4E9;--ink:#0F1310" data-title="Spanish songs" data-artist="" aria-label="Play Spanish songs"><span class="sleeve-face"><b>Spanish songs</b><i>&nbsp;</i></span></button><button class="sleeve" type="button" style="--i:4;--tilt:-2deg;--c:#2C352A;--ink:#F2F4E9" data-title="Next pick" data-artist="" aria-label="Play Next pick"><span class="sleeve-face"><b>Next pick</b><i>&nbsp;</i></span></button></div>
+      <div class="crate-front"><span>On repeat</span></div>
+    </div>
+    <div class="deck" aria-hidden="true">
+      <div class="platter"><div class="disc"><span class="hole"></span></div></div>
+      <div class="arm"><i></i><b></b></div>
+      <span class="knob"></span><span class="led"></span>
+    </div>
+  </div>
+</section>
 </main>
 
 <footer class="bar foot">
@@ -178,3 +202,4 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 </script>
 <script type="application/json" id="sketch-pages">[{"src": "../sketchbook/01-fwends.webp", "alt": "Pencil page of the cast: a boy with glasses, a cat in a frog hat, Ethan with spiral eyes, and small friends on a skateboard, with handwritten notes.", "w": 462, "h": 643, "nobind": false}, {"src": "../sketchbook/02-nigel.webp", "alt": "Pencil page: Nigel in a hood saying OK!, with his bio: loves music and art, still figuring it out. Peace.", "w": 408, "h": 645, "nobind": false}, {"src": "../sketchbook/03-the-fool.webp", "alt": "Pencil page: The Fool, a jester framed like a tarot card, and a grinning creature below.", "w": 492, "h": 686, "nobind": false}, {"src": "../sketchbook/04-tim-and-bob.webp", "alt": "Pencil page: Tim in a hood with a heart, and Bob the cat, the most intelligent cat out there.", "w": 505, "h": 674, "nobind": false}, {"src": "../sketchbook/05-corset.webp", "alt": "Coloured pencil fashion sketch: a laced corset with a bow on a dress form, in pink and orange.", "w": 345, "h": 532, "nobind": false}, {"src": "../sketchbook/06-bustier.webp", "alt": "Coloured pencil fashion sketch: a bustier with a flower on a mannequin, in pink and orange.", "w": 386, "h": 608, "nobind": false}, {"src": "../sketchbook/07-bow-dress.webp", "alt": "Pencil and pink fashion sketch: a dress with a big bow at the top, and a small heart in the corner.", "w": 552, "h": 836, "nobind": false}, {"src": "../sketchbook/08-perspective.webp", "alt": "Pencil practice in one- and two-point perspective: boxes, buildings and a bus.", "w": 912, "h": 567, "nobind": false}, {"src": "../sketchbook/09-eyes.webp", "alt": "Pink pencil page: a pair of eyes in a frame with the words I've got my eyes only on you, a butterfly, and a scribbled instrument.", "w": 905, "h": 608, "nobind": false}, {"src": "../sketchbook/10-swan.webp", "alt": "Pink pencil sketch of a swan.", "w": 846, "h": 601, "nobind": true}]</script>
 <script src="../sketchbook/book.js" defer></script>
+<script src="../records/records.js" defer></script>
