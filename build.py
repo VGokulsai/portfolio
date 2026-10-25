@@ -93,6 +93,7 @@ WORK = [
 with io.open("sketchbook/pages.json", encoding="utf-8") as _f:
     SKETCH = json.load(_f)
 SKETCH_LINE = "My new sketchbook: a cast of characters with their own bios, and some fashion sketches."
+SKETCH_COVER = 2  # The Fool, taped on the cover like a sticker
 
 # What I actually believe, kept to the three that changed how I build.
 RULES = [
@@ -200,17 +201,24 @@ def render(ps, source, avatar=None):
         '<a href="%s">%s</a> <span class="line">%s</span></p></li>'
         % (esc(k), esc(u), esc(n), esc(line)) for k, n, u, line in WORK)
 
-    # Thumbnails open the book at that page; the count is the number of files.
-    thumbs = "".join(
-        '<button class="thumb" type="button" data-page="%d" aria-label="Open the sketchbook at page %d">'
-        '<img src="%s" width="%d" height="%d" alt="" loading="lazy"></button>'
-        % (i + 1, i + 1, esc(p["src"]), p["w"], p["h"]) for i, p in enumerate(SKETCH))
+    # A closed spiral sketchbook floats in the section; clicking it swings the
+    # cover open in 3D, then the book opens over the page. The count is the files.
+    cover = SKETCH[SKETCH_COVER]
+    rings = '<i></i>' * 11
     art = ('<li class="row job"><span class="kind">Sketches</span><p class="what">'
-           '<button class="open" type="button" data-page="0">Sketchbook</button> '
+           '<button class="open" type="button" data-page="1">Sketchbook</button> '
            '<span class="line">%s %d pages so far.</span></p></li>'
-           '<li class="strip">%s</li>' % (esc(SKETCH_LINE), len(SKETCH), thumbs))
-    leaves = "".join('<div class="leaf"><img src="%s" width="%d" height="%d" alt="%s" loading="lazy"></div>'
-                     % (esc(p["src"]), p["w"], p["h"], esc(p["alt"])) for p in SKETCH)
+           '<li class="stage"><button class="sketch3d" type="button" data-page="1" aria-label="Open the sketchbook">'
+           '<span class="b3"><span class="b3-back"></span><span class="b3-edge b3-right"></span>'
+           '<span class="b3-edge b3-top"></span><span class="b3-edge b3-bottom"></span>'
+           '<span class="b3-first"><img src="%s" alt="" loading="lazy"></span>'
+           '<span class="b3-cover"><span class="b3-t">Sketch<br>book<b>.</b></span>'
+           '<span class="b3-sticker"><img src="%s" alt="" loading="lazy"></span>'
+           '<span class="b3-s">Gokul Sai &middot; vol. 01</span></span>'
+           '<span class="b3-rings" aria-hidden="true">%s</span></span>'
+           '<span class="b3-shadow" aria-hidden="true"></span></button></li>'
+           % (esc(SKETCH_LINE), len(SKETCH), esc(SKETCH[0]["src"]), esc(cover["src"]), rings))
+    pages_json = json.dumps([{"src": p["src"], "alt": p["alt"]} for p in SKETCH]).replace("</", "<\\/")
 
     rows = "\n".join(
         '<li class="row" style="--i:%d"><time datetime="%s">%s</time>'
@@ -231,7 +239,7 @@ def render(ps, source, avatar=None):
         "rows": rows,
         "work": work,
         "art": art,
-        "leaves": leaves,
+        "pages_json": pages_json,
         "hire": hire,
         "cache_note": cache_note,
         "rules": rules,
@@ -248,13 +256,15 @@ def render(ps, source, avatar=None):
 
 TAGLINE = "I build tools that check whether something is true before you act on it. Hyderabad."
 
-TEMPLATE = """<title>Gokul Sai</title>
+TEMPLATE = """<meta charset="utf-8">
+<title>Gokul Sai</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="%(tagline)s">
 %(og)s
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="sketchbook/book.css">
 <style>
 /* ----------------------------------------------------------------------------
    Palette and faces are Out Baby Out's, read out of that repo.
@@ -346,50 +356,18 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 .foot a{text-decoration-color:var(--dim);text-underline-offset:3px}
 .foot b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
 
-/* ---- art: a link-like button and a strip of real pages -------------------- */
+/* ---- art: a link-like button; the 3D book's own styles are sketchbook/book.css */
 .what .open{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;
   text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px;
   transition:color 120ms ease,text-decoration-color 120ms ease}
 @media (hover:hover){.what .open:hover{color:var(--hot);text-decoration-color:var(--hot)}}
-.strip{display:flex;gap:10px;padding-left:162px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.thumb{flex:none;padding:4px;border:1px solid var(--line);border-radius:2px;background:#EFEDE3;cursor:pointer;
-  transition:transform 200ms var(--ease),border-color 120ms ease}
-.thumb img{display:block;height:84px;width:auto;mix-blend-mode:multiply}
-@media (hover:hover){.thumb:hover{transform:translateY(-3px);border-color:var(--hot)}}
-
-/* ---- the sketchbook: opens over the page, pages turn like paper ----------- */
-.book{width:min(1000px,100vw - 24px);max-width:none;max-height:calc(100dvh - 24px);padding:20px;
-  border:1px solid var(--line);border-radius:2px;background:var(--field);color:var(--chalk);overflow:hidden}
-.book::backdrop{background:rgba(8,10,8,.88)}
-.book[open]{animation:open .45s var(--ease)}
-@keyframes open{from{opacity:0;transform:translateY(12px)}}
-.book-bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.book h2{font:400 10px/16px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0}
-.book-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:16px;visibility:hidden}
-.ready + .book-nav{visibility:visible}
-.book .btn{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:2px;background:none;
-  color:var(--chalk);font:400 12px/1 var(--mono);cursor:pointer;transition:color 120ms ease,border-color 120ms ease}
-@media (hover:hover){.book .btn:hover:not(:disabled){color:var(--hot);border-color:var(--hot)}}
-.book .btn:disabled{opacity:.35;cursor:default}
-.count{min-width:12ch;text-align:center;font:400 12px/16px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
-.leaves{margin:16px auto 0;max-height:calc(100dvh - 170px);overflow:auto;display:grid;gap:12px;justify-items:center}
-.leaf{background:#EFEDE3;padding:4%%;aspect-ratio:420/580;width:min(100%%,420px)}
-.leaf img{display:block;width:100%%;height:100%%;object-fit:contain;mix-blend-mode:multiply}
-.leaf.cover{display:grid;place-content:center;text-align:center;background:var(--panel);color:var(--chalk);border:1px solid var(--line)}
-.cover .t{margin:0;font:400 clamp(40px,7vw,72px)/.9 var(--display);text-transform:uppercase}
-.cover .t .dot{color:var(--hot)}
-.cover .s{margin:16px 0 0;font:400 12px/16px var(--mono);color:var(--dim)}
-.leaves.ready{display:block;justify-items:normal;overflow:visible;max-height:none}
-.leaves.ready .leaf{width:auto;aspect-ratio:auto}
-
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.row{animation:none}.book[open]{animation:none}.thumb{transition:none}}
+@media (prefers-reduced-motion:reduce){.row{animation:none}}
 
 @media (max-width:640px){
   .page{padding:20px}
   .row{gap:20px}
   .what{max-width:none}
-  .strip{padding-left:0;margin-right:-20px}
   header.bar{flex-wrap:wrap;row-gap:14px}
   /* 28px between wrapped rows: each link has a 44px tap area on a 16px line,
      so anything tighter lets a tap between rows land on the wrong link. */
@@ -449,23 +427,6 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 </footer>
 </div>
 
-<dialog class="book" id="sketchbook" aria-labelledby="book-title">
-  <div class="book-bar">
-    <h2 id="book-title">Sketchbook</h2>
-    <button class="btn shut" type="button">Close</button>
-  </div>
-  <div class="leaves">
-    <div class="leaf cover" data-density="hard"><p class="t">Sketch<br>book<span class="dot">.</span></p><p class="s">Gokul Sai &middot; vol. 01</p></div>
-%(leaves)s
-    <div class="leaf cover" data-density="hard"><p class="s">More pages loading.</p></div>
-  </div>
-  <div class="book-nav">
-    <button class="btn prev" type="button">Back</button>
-    <span class="count" aria-live="polite"></span>
-    <button class="btn next" type="button">Next</button>
-  </div>
-</dialog>
-
 <script>
 /* A live Hyderabad clock, bottom right. Hidden without JavaScript rather than
    showing a time that never moves. */
@@ -480,53 +441,9 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   wrap.hidden = false;
   setInterval(tick, 15000);
 })();
-
-/* The sketchbook. Pages turn with a page-flip library loaded on first open;
-   if it cannot load, the pages stay a scrollable stack inside the dialog. */
-(function () {
-  var book = document.getElementById("sketchbook");
-  if (!book || !book.showModal) return;
-  var leaves = book.querySelector(".leaves"), count = book.querySelector(".count");
-  var prev = book.querySelector(".prev"), next = book.querySelector(".next");
-  var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var flip = null, loading = false, want = 0;
-  function show() {
-    var i = flip.getCurrentPageIndex(), n = flip.getPageCount();
-    count.textContent = i === 0 ? "Cover" : i >= n - 1 ? "The end" : "Page " + i + " of " + (n - 2);
-    prev.disabled = i === 0; next.disabled = i >= n - 1;
-  }
-  function start() {
-    if (flip) { flip.turnToPage(want); show(); return; }
-    if (loading) return;
-    loading = true;
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js";
-    s.onload = function () {
-      leaves.classList.add("ready");  // block layout first: the library measures this box when it starts
-      flip = new St.PageFlip(leaves, {width: 420, height: 580, size: "stretch", minWidth: 220, maxWidth: 460,
-        minHeight: 300, maxHeight: 640, showCover: true, usePortrait: true, mobileScrollSupport: false,
-        flippingTime: calm ? 200 : 800, maxShadowOpacity: .45});
-      flip.loadFromHTML(leaves.querySelectorAll(".leaf"));
-      flip.on("flip", show);
-      flip.turnToPage(want); show();
-    };
-    document.head.appendChild(s);
-  }
-  [].forEach.call(document.querySelectorAll("[data-page]"), function (b) {
-    b.addEventListener("click", function () { want = +b.getAttribute("data-page"); book.showModal(); start(); });
-  });
-  book.querySelector(".shut").addEventListener("click", function () { book.close(); });
-  book.addEventListener("click", function (e) {  // a click on the dimmed page outside the book closes it
-    var r = book.getBoundingClientRect();        // (keyboard clicks report 0,0: only the dialog itself counts)
-    if (e.target === book && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) book.close();
-  });
-  prev.addEventListener("click", function () { if (flip) flip.flipPrev(); });
-  next.addEventListener("click", function () { if (flip) flip.flipNext(); });
-  book.addEventListener("keydown", function (e) {
-    if (!flip) return;
-    if (e.key === "ArrowRight") flip.flipNext(); else if (e.key === "ArrowLeft") flip.flipPrev();
-  });
-})();
+</script>
+<script type="application/json" id="sketch-pages">%(pages_json)s</script>
+<script src="sketchbook/book.js" defer></script>
 </script>
 """
 
@@ -616,9 +533,13 @@ def check():
     assert workhtml.count('<li class="row job"') == len(WORK), "every work item is shown"
     assert all('href="%s"' % u in workhtml for _k, _n, u, _l in WORK), "work links go where they say"
     # Art: every sketchbook page is in the book, on disk, described, and counted from the files.
-    assert html.count('<div class="leaf"><img') == len(SKETCH) >= 1, "every page is in the book"
-    assert html.count('class="thumb"') == len(SKETCH), "and in the strip"
-    assert all(os.path.exists(p["src"]) and esc(p["alt"]) in html for p in SKETCH), "each page has its file and alt text"
+    m = re.search(r'<script type="application/json" id="sketch-pages">(.*?)</script>', html, re.S)
+    book = json.loads(m.group(1)) if m else []
+    assert len(book) == len(SKETCH) >= 1, "every page is in the book's data"
+    assert all(os.path.exists(p["src"]) and p["alt"] for p in book), "each page has its file and alt text"
+    assert all(os.path.exists(f) and ('href="%s"' % f in html or 'src="%s"' % f in html)
+               for f in ("sketchbook/book.css", "sketchbook/book.js")), "the book's code ships and is linked"
+    assert 'class="sketch3d"' in html, "the closed book floats in the section"
     assert "%d pages so far" % len(SKETCH) in html, "the page count comes from the files"
     # A stranger can reach him without decoding anything.
     assert 'href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a>' in html, \

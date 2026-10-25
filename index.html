@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Gokul Sai</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="I build tools that check whether something is true before you act on it. Hyderabad.">
@@ -10,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="sketchbook/book.css">
 <style>
 /* ----------------------------------------------------------------------------
    Palette and faces are Out Baby Out's, read out of that repo.
@@ -101,50 +103,18 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 .foot a{text-decoration-color:var(--dim);text-underline-offset:3px}
 .foot b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
 
-/* ---- art: a link-like button and a strip of real pages -------------------- */
+/* ---- art: a link-like button; the 3D book's own styles are sketchbook/book.css */
 .what .open{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;
   text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px;
   transition:color 120ms ease,text-decoration-color 120ms ease}
 @media (hover:hover){.what .open:hover{color:var(--hot);text-decoration-color:var(--hot)}}
-.strip{display:flex;gap:10px;padding-left:162px;overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
-.thumb{flex:none;padding:4px;border:1px solid var(--line);border-radius:2px;background:#EFEDE3;cursor:pointer;
-  transition:transform 200ms var(--ease),border-color 120ms ease}
-.thumb img{display:block;height:84px;width:auto;mix-blend-mode:multiply}
-@media (hover:hover){.thumb:hover{transform:translateY(-3px);border-color:var(--hot)}}
-
-/* ---- the sketchbook: opens over the page, pages turn like paper ----------- */
-.book{width:min(1000px,100vw - 24px);max-width:none;max-height:calc(100dvh - 24px);padding:20px;
-  border:1px solid var(--line);border-radius:2px;background:var(--field);color:var(--chalk);overflow:hidden}
-.book::backdrop{background:rgba(8,10,8,.88)}
-.book[open]{animation:open .45s var(--ease)}
-@keyframes open{from{opacity:0;transform:translateY(12px)}}
-.book-bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.book h2{font:400 10px/16px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0}
-.book-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:16px;visibility:hidden}
-.ready + .book-nav{visibility:visible}
-.book .btn{min-width:44px;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:2px;background:none;
-  color:var(--chalk);font:400 12px/1 var(--mono);cursor:pointer;transition:color 120ms ease,border-color 120ms ease}
-@media (hover:hover){.book .btn:hover:not(:disabled){color:var(--hot);border-color:var(--hot)}}
-.book .btn:disabled{opacity:.35;cursor:default}
-.count{min-width:12ch;text-align:center;font:400 12px/16px var(--mono);color:var(--dim);font-variant-numeric:tabular-nums}
-.leaves{margin:16px auto 0;max-height:calc(100dvh - 170px);overflow:auto;display:grid;gap:12px;justify-items:center}
-.leaf{background:#EFEDE3;padding:4%;aspect-ratio:420/580;width:min(100%,420px)}
-.leaf img{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply}
-.leaf.cover{display:grid;place-content:center;text-align:center;background:var(--panel);color:var(--chalk);border:1px solid var(--line)}
-.cover .t{margin:0;font:400 clamp(40px,7vw,72px)/.9 var(--display);text-transform:uppercase}
-.cover .t .dot{color:var(--hot)}
-.cover .s{margin:16px 0 0;font:400 12px/16px var(--mono);color:var(--dim)}
-.leaves.ready{display:block;justify-items:normal;overflow:visible;max-height:none}
-.leaves.ready .leaf{width:auto;aspect-ratio:auto}
-
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.row{animation:none}.book[open]{animation:none}.thumb{transition:none}}
+@media (prefers-reduced-motion:reduce){.row{animation:none}}
 
 @media (max-width:640px){
   .page{padding:20px}
   .row{gap:20px}
   .what{max-width:none}
-  .strip{padding-left:0;margin-right:-20px}
   header.bar{flex-wrap:wrap;row-gap:14px}
   /* 28px between wrapped rows: each link has a 44px tap area on a 16px line,
      so anything tighter lets a tap between rows land on the wrong link. */
@@ -183,7 +153,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 <section class="sec">
   <h2>Art</h2>
   <ul class="work">
-<li class="row job"><span class="kind">Sketches</span><p class="what"><button class="open" type="button" data-page="0">Sketchbook</button> <span class="line">My new sketchbook: a cast of characters with their own bios, and some fashion sketches. 6 pages so far.</span></p></li><li class="strip"><button class="thumb" type="button" data-page="1" aria-label="Open the sketchbook at page 1"><img src="sketchbook/01-fwends.webp" width="471" height="647" alt="" loading="lazy"></button><button class="thumb" type="button" data-page="2" aria-label="Open the sketchbook at page 2"><img src="sketchbook/02-nigel.webp" width="450" height="645" alt="" loading="lazy"></button><button class="thumb" type="button" data-page="3" aria-label="Open the sketchbook at page 3"><img src="sketchbook/03-the-fool.webp" width="492" height="686" alt="" loading="lazy"></button><button class="thumb" type="button" data-page="4" aria-label="Open the sketchbook at page 4"><img src="sketchbook/04-tim-and-bob.webp" width="531" height="680" alt="" loading="lazy"></button><button class="thumb" type="button" data-page="5" aria-label="Open the sketchbook at page 5"><img src="sketchbook/05-corset.webp" width="345" height="532" alt="" loading="lazy"></button><button class="thumb" type="button" data-page="6" aria-label="Open the sketchbook at page 6"><img src="sketchbook/06-bustier.webp" width="437" height="658" alt="" loading="lazy"></button></li>
+<li class="row job"><span class="kind">Sketches</span><p class="what"><button class="open" type="button" data-page="1">Sketchbook</button> <span class="line">My new sketchbook: a cast of characters with their own bios, and some fashion sketches. 6 pages so far.</span></p></li><li class="stage"><button class="sketch3d" type="button" data-page="1" aria-label="Open the sketchbook"><span class="b3"><span class="b3-back"></span><span class="b3-edge b3-right"></span><span class="b3-edge b3-top"></span><span class="b3-edge b3-bottom"></span><span class="b3-first"><img src="sketchbook/01-fwends.webp" alt="" loading="lazy"></span><span class="b3-cover"><span class="b3-t">Sketch<br>book<b>.</b></span><span class="b3-sticker"><img src="sketchbook/03-the-fool.webp" alt="" loading="lazy"></span><span class="b3-s">Gokul Sai &middot; vol. 01</span></span><span class="b3-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="b3-shadow" aria-hidden="true"></span></button></li>
   </ul>
 </section>
 
@@ -212,27 +182,10 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 
 <footer class="bar foot">
   <span>&copy; 2026 Gokul Sai</span>
-  <span class="mid">Project count read from GitHub 2026-10-25 10:31 UTC</span>
+  <span class="mid">Project count read from GitHub 2026-10-25 10:41 UTC</span>
   <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
 </footer>
 </div>
-
-<dialog class="book" id="sketchbook" aria-labelledby="book-title">
-  <div class="book-bar">
-    <h2 id="book-title">Sketchbook</h2>
-    <button class="btn shut" type="button">Close</button>
-  </div>
-  <div class="leaves">
-    <div class="leaf cover" data-density="hard"><p class="t">Sketch<br>book<span class="dot">.</span></p><p class="s">Gokul Sai &middot; vol. 01</p></div>
-<div class="leaf"><img src="sketchbook/01-fwends.webp" width="471" height="647" alt="Pencil page of the cast: a boy with glasses, a cat in a frog hat, Ethan with spiral eyes, and small friends on a skateboard, with handwritten notes." loading="lazy"></div><div class="leaf"><img src="sketchbook/02-nigel.webp" width="450" height="645" alt="Pencil page: Nigel in a hood saying OK!, with his bio: loves music and art, still figuring it out. Peace." loading="lazy"></div><div class="leaf"><img src="sketchbook/03-the-fool.webp" width="492" height="686" alt="Pencil page: The Fool, a jester framed like a tarot card, and a grinning creature below." loading="lazy"></div><div class="leaf"><img src="sketchbook/04-tim-and-bob.webp" width="531" height="680" alt="Pencil page: Tim in a hood with a heart, and Bob the cat, the most intelligent cat out there." loading="lazy"></div><div class="leaf"><img src="sketchbook/05-corset.webp" width="345" height="532" alt="Coloured pencil fashion sketch: a laced corset with a bow on a dress form, in pink and orange." loading="lazy"></div><div class="leaf"><img src="sketchbook/06-bustier.webp" width="437" height="658" alt="Coloured pencil fashion sketch: a bustier with a flower on a mannequin, in pink and orange." loading="lazy"></div>
-    <div class="leaf cover" data-density="hard"><p class="s">More pages loading.</p></div>
-  </div>
-  <div class="book-nav">
-    <button class="btn prev" type="button">Back</button>
-    <span class="count" aria-live="polite"></span>
-    <button class="btn next" type="button">Next</button>
-  </div>
-</dialog>
 
 <script>
 /* A live Hyderabad clock, bottom right. Hidden without JavaScript rather than
@@ -248,51 +201,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   wrap.hidden = false;
   setInterval(tick, 15000);
 })();
-
-/* The sketchbook. Pages turn with a page-flip library loaded on first open;
-   if it cannot load, the pages stay a scrollable stack inside the dialog. */
-(function () {
-  var book = document.getElementById("sketchbook");
-  if (!book || !book.showModal) return;
-  var leaves = book.querySelector(".leaves"), count = book.querySelector(".count");
-  var prev = book.querySelector(".prev"), next = book.querySelector(".next");
-  var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var flip = null, loading = false, want = 0;
-  function show() {
-    var i = flip.getCurrentPageIndex(), n = flip.getPageCount();
-    count.textContent = i === 0 ? "Cover" : i >= n - 1 ? "The end" : "Page " + i + " of " + (n - 2);
-    prev.disabled = i === 0; next.disabled = i >= n - 1;
-  }
-  function start() {
-    if (flip) { flip.turnToPage(want); show(); return; }
-    if (loading) return;
-    loading = true;
-    var s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js";
-    s.onload = function () {
-      leaves.classList.add("ready");  // block layout first: the library measures this box when it starts
-      flip = new St.PageFlip(leaves, {width: 420, height: 580, size: "stretch", minWidth: 220, maxWidth: 460,
-        minHeight: 300, maxHeight: 640, showCover: true, usePortrait: true, mobileScrollSupport: false,
-        flippingTime: calm ? 200 : 800, maxShadowOpacity: .45});
-      flip.loadFromHTML(leaves.querySelectorAll(".leaf"));
-      flip.on("flip", show);
-      flip.turnToPage(want); show();
-    };
-    document.head.appendChild(s);
-  }
-  [].forEach.call(document.querySelectorAll("[data-page]"), function (b) {
-    b.addEventListener("click", function () { want = +b.getAttribute("data-page"); book.showModal(); start(); });
-  });
-  book.querySelector(".shut").addEventListener("click", function () { book.close(); });
-  book.addEventListener("click", function (e) {  // a click on the dimmed page outside the book closes it
-    var r = book.getBoundingClientRect();        // (keyboard clicks report 0,0: only the dialog itself counts)
-    if (e.target === book && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom)) book.close();
-  });
-  prev.addEventListener("click", function () { if (flip) flip.flipPrev(); });
-  next.addEventListener("click", function () { if (flip) flip.flipNext(); });
-  book.addEventListener("keydown", function (e) {
-    if (!flip) return;
-    if (e.key === "ArrowRight") flip.flipNext(); else if (e.key === "ArrowLeft") flip.flipPrev();
-  });
-})();
+</script>
+<script type="application/json" id="sketch-pages">[{"src": "sketchbook/01-fwends.webp", "alt": "Pencil page of the cast: a boy with glasses, a cat in a frog hat, Ethan with spiral eyes, and small friends on a skateboard, with handwritten notes."}, {"src": "sketchbook/02-nigel.webp", "alt": "Pencil page: Nigel in a hood saying OK!, with his bio: loves music and art, still figuring it out. Peace."}, {"src": "sketchbook/03-the-fool.webp", "alt": "Pencil page: The Fool, a jester framed like a tarot card, and a grinning creature below."}, {"src": "sketchbook/04-tim-and-bob.webp", "alt": "Pencil page: Tim in a hood with a heart, and Bob the cat, the most intelligent cat out there."}, {"src": "sketchbook/05-corset.webp", "alt": "Coloured pencil fashion sketch: a laced corset with a bow on a dress form, in pink and orange."}, {"src": "sketchbook/06-bustier.webp", "alt": "Coloured pencil fashion sketch: a bustier with a flower on a mannequin, in pink and orange."}]</script>
+<script src="sketchbook/book.js" defer></script>
 </script>
