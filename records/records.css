@@ -120,4 +120,4 @@
   .notes { display: none; }
   .staff .n, .records.playing .staff .n, .bignote { animation: none; }
 }
-@media (max-width: 1100px) { .staff { display: none; } }
+@media (max-width: 760px) { .staff { display: none; } }   /* phones stack everything; no empty side to fill */
