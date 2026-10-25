@@ -399,6 +399,12 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 @media (hover:hover){.sheet .hire a:hover,.sheet .what a:hover{color:var(--ink);text-decoration-color:currentColor;text-decoration-style:wavy}}
 .sheet :focus-visible{outline-color:var(--ink)}
 .sheet .work,.sheet .ledger{gap:18px}
+/* the Hack Club sticker on the name sheet (his ask, 25 Oct 2026); join = their Slack sign-up */
+.club{display:inline-flex;align-items:center;gap:12px;margin:22px 0 0;padding:8px 8px 8px 14px;background:#0F1310;color:var(--chalk);
+  font:700 14px/18px var(--mono);rotate:2deg;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.club a{padding:6px 12px;border-radius:999px;background:#C2255C;color:var(--chalk);text-decoration:none;
+  transition:background 160ms ease,scale 160ms cubic-bezier(.23,1,.32,1)}
+@media (hover:hover) and (pointer:fine){.club a:hover{background:#E0523B;scale:1.06}}
 .sheet .rules{gap:16px}
 .sheet .rule h3{font-weight:700}
 .torn{position:absolute;left:0;width:100%%;height:30px;fill:var(--band);pointer-events:none}
@@ -455,6 +461,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
       act on it. <b>A zero means two things: nothing was there, or I could not
       look.</b> Most of what I build exists to tell those apart.</p>
     <p class="hire">%(hire)sWant something built? <a href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a></p>
+    <p class="club">member of Hack Club <a href="https://hackclub.com/slack/">join</a></p>
   </div>
 </section>
 
@@ -802,6 +809,7 @@ def check():
         "the book's code ships and is linked"
     assert art.count('class="sketch3d"') == 1 and "{{" not in art and "%%" not in art, "the art page is filled in"
     assert "%d<br>pages" % len(SKETCH) in art, "the cover's page count comes from the files"
+    assert 'member of Hack Club <a href="https://hackclub.com/slack/">join</a>' in html, "the Hack Club sticker and its join link"
     # A stranger can reach him without decoding anything.
     assert 'href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a>' in html, \
         "the email is written out on the page"

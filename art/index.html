@@ -131,6 +131,12 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 @media (hover:hover){.sheet .hire a:hover,.sheet .what a:hover{color:var(--ink);text-decoration-color:currentColor;text-decoration-style:wavy}}
 .sheet :focus-visible{outline-color:var(--ink)}
 .sheet .work,.sheet .ledger{gap:18px}
+/* the Hack Club sticker on the name sheet (his ask, 25 Oct 2026); join = their Slack sign-up */
+.club{display:inline-flex;align-items:center;gap:12px;margin:22px 0 0;padding:8px 8px 8px 14px;background:#0F1310;color:var(--chalk);
+  font:700 14px/18px var(--mono);rotate:2deg;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.club a{padding:6px 12px;border-radius:999px;background:#C2255C;color:var(--chalk);text-decoration:none;
+  transition:background 160ms ease,scale 160ms cubic-bezier(.23,1,.32,1)}
+@media (hover:hover) and (pointer:fine){.club a:hover{background:#E0523B;scale:1.06}}
 .sheet .rules{gap:16px}
 .sheet .rule h3{font-weight:700}
 .torn{position:absolute;left:0;width:100%;height:30px;fill:var(--band);pointer-events:none}
