@@ -452,7 +452,7 @@ def render_art():
     style = TEMPLATE[TEMPLATE.index("<style>") + 7:TEMPLATE.index("</style>")].replace("%%", "%")
     clock = TEMPLATE[TEMPLATE.index("<script>"):TEMPLATE.index("</script>") + 9]
     links = "".join('<a href="%s">%s</a>' % (esc(u), esc(n)) for n, u in LINKS if u)
-    pages = json.dumps([{"src": "../" + p["src"], "alt": p["alt"], "w": p["w"], "h": p["h"]} for p in SKETCH]).replace("</", "<\\/")
+    pages = json.dumps([{"src": "../" + p["src"], "alt": p["alt"], "w": p["w"], "h": p["h"], "nobind": p.get("nobind", False)} for p in SKETCH]).replace("</", "<\\/")
     page = ART_TEMPLATE
     for key, val in (("style", style), ("clock", clock), ("links", links), ("book", closed_book("../")),
                      ("line", esc(SKETCH_LINE)), ("n", str(len(SKETCH))), ("pages", pages),

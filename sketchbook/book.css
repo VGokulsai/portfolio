@@ -63,10 +63,12 @@
 .cv::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 14cqw; pointer-events: none;
   background: linear-gradient(225deg, #1A1A1A 0 7cqw, transparent 7cqw) top right / 14cqw 14cqw no-repeat,
               linear-gradient(315deg, #1A1A1A 0 7cqw, transparent 7cqw) bottom right / 14cqw 14cqw no-repeat; }
-.b3-rings { left: -9px; top: 10px; bottom: 10px; width: 22px; display: flex; flex-direction: column;
+.b3-rings { left: -13px; top: 10px; bottom: 10px; width: 30px; display: flex; flex-direction: column;
   justify-content: space-between; transform: translateZ(2px); }
-.b3-rings i, .sk-rings i { display: block; height: 9px; border: 2.5px solid var(--sk-wire); border-radius: 999px;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, .35); }
+/* the wire: thick, metal-shaded loops that stand well off the page */
+.b3-rings i, .sk-rings i { display: block; height: 10px; border: 3.5px solid var(--sk-wire); border-radius: 999px;
+  border-top-color: #F4F5EE; border-bottom-color: #8C9086;
+  box-shadow: 0 3px 3px rgba(0, 0, 0, .45), inset 0 1px 1px rgba(0, 0, 0, .25); }
 .b3-shadow { position: absolute; left: 6%; right: -4%; bottom: -34px; height: 26px; border-radius: 50%;
   background: radial-gradient(closest-side, rgba(0, 0, 0, .55), transparent); filter: blur(4px);
   animation: sk-shadow 5.5s ease-in-out infinite alternate; }
@@ -98,7 +100,7 @@
 .sk-face.half.r img { left: -100%; }
 /* punched holes down the bound edge of every page */
 .sk-face::before { content: ""; position: absolute; top: 3%; bottom: 3%; left: 6px; width: 10px;
-  background: radial-gradient(circle at 5px 50%, rgba(15, 19, 16, .85) 3.2px, transparent 3.8px) 0 0 / 10px calc(var(--h) * .94 / 11) repeat-y; }
+  background: radial-gradient(circle at 5px 50%, rgba(15, 19, 16, .9) 4px, transparent 4.6px) 0 0 / 10px calc(var(--h) * .94 / 11) repeat-y; }
 .sk-face.back::before { left: auto; right: 6px; }
 /* light falling across a page as it lifts: --shade is set per face while turning */
 .sk-face::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: var(--shade, 0);
@@ -112,9 +114,11 @@
 .sk-back { position: absolute; inset: 0; background: var(--sk-cover); border-radius: 1px 5px 5px 1px; transform: translateZ(-6px); }
 .sk-edge { position: absolute; top: 2px; bottom: 2px; right: 0; width: 6px; transform-origin: right center; transform: rotateY(90deg);
   background: repeating-linear-gradient(90deg, var(--sk-paper) 0 2px, #CFCBBC 2px 3px); }
-.sk-rings { position: absolute; left: -13px; top: 2%; bottom: 2%; width: 26px; display: flex; flex-direction: column;
-  justify-content: space-between; transform: translateZ(3px); pointer-events: none; }
-.sk-rings i { height: 10px; }
+.sk-rings { position: absolute; left: -22px; top: 2%; bottom: 2%; width: 44px; display: flex; flex-direction: column;
+  justify-content: space-between; transform: translateZ(10px); pointer-events: none; transition: opacity 260ms ease; }
+.sk-rings i { height: 14px; }
+.sk-book.bare .sk-rings { opacity: 0; }
+.sk-face.nobind::before { display: none; }
 
 .sk-ui { position: absolute; left: 0; right: 0; bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 16px;
   font: 400 12px/16px var(--mono); opacity: 0; transition: opacity 240ms ease; }

@@ -42,6 +42,7 @@
       f.appendChild(img);
       f.dataset.page = i + 1;
       if (half) f.className += " half " + half;               // one half of a drawing across the spread
+      if (pages[i].nobind) f.className += " nobind";          // this spread shows without the binding
     } else if (kind === "cover") {
       f.className += " cv";
       f.innerHTML = closed.querySelector(".cv").innerHTML;   // the same cover as the closed book
@@ -123,6 +124,8 @@
     if (right && right.dataset.page) shown.push(+right.dataset.page);
     count.textContent = at === 0 ? "Cover" : !shown.length ? "The end" :
       (shown.length === 2 && shown[0] !== shown[1] ? "Pages " + shown[0] + "\u2013" + shown[1] : "Page " + shown[0]) + " of " + pages.length;
+    // a drawing marked nobind (the swan) gets its spread without rings or holes
+    bookEl.classList.toggle("bare", !!(left && right && left.classList.contains("nobind") && right.classList.contains("nobind")));
     prev.disabled = at <= 1;
     next.disabled = at >= leaves.length;
   }

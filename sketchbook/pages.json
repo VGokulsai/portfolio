@@ -42,21 +42,22 @@
   "alt": "Pencil and pink fashion sketch: a dress with a big bow at the top, and a small heart in the corner."
  },
  {
-  "src": "sketchbook/08-swan.webp",
-  "w": 846,
-  "h": 601,
-  "alt": "Pink pencil sketch of a swan."
- },
- {
-  "src": "sketchbook/09-perspective.webp",
+  "src": "sketchbook/08-perspective.webp",
   "w": 912,
   "h": 567,
   "alt": "Pencil practice in one- and two-point perspective: boxes, buildings and a bus."
  },
  {
-  "src": "sketchbook/10-eyes.webp",
+  "src": "sketchbook/09-eyes.webp",
   "w": 905,
   "h": 608,
   "alt": "Pink pencil page: a pair of eyes in a frame with the words I've got my eyes only on you, a butterfly, and a scribbled instrument."
+ },
+ {
+  "src": "sketchbook/10-swan.webp",
+  "w": 846,
+  "h": 601,
+  "alt": "Pink pencil sketch of a swan.",
+  "nobind": true
  }
 ]
