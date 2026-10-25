@@ -201,24 +201,10 @@ def render(ps, source, avatar=None):
         '<a href="%s">%s</a> <span class="line">%s</span></p></li>'
         % (esc(k), esc(u), esc(n), esc(line)) for k, n, u, line in WORK)
 
-    # A closed spiral sketchbook floats in the section; clicking it swings the
-    # cover open in 3D, then the book opens over the page. The count is the files.
-    cover = SKETCH[SKETCH_COVER]
-    rings = '<i></i>' * 11
+    # The sketchbook lives on its own page (art/); here it is one row like the rest.
     art = ('<li class="row job"><span class="kind">Sketches</span><p class="what">'
-           '<button class="open" type="button" data-page="1">Sketchbook</button> '
-           '<span class="line">%s %d pages so far.</span></p></li>'
-           '<li class="stage"><button class="sketch3d" type="button" data-page="1" aria-label="Open the sketchbook">'
-           '<span class="b3"><span class="b3-back"></span><span class="b3-edge b3-right"></span>'
-           '<span class="b3-edge b3-top"></span><span class="b3-edge b3-bottom"></span>'
-           '<span class="b3-first"><img src="%s" alt="" loading="lazy"></span>'
-           '<span class="b3-cover"><span class="b3-t">Sketch<br>book<b>.</b></span>'
-           '<span class="b3-sticker"><img src="%s" alt="" loading="lazy"></span>'
-           '<span class="b3-s">Gokul Sai &middot; vol. 01</span></span>'
-           '<span class="b3-rings" aria-hidden="true">%s</span></span>'
-           '<span class="b3-shadow" aria-hidden="true"></span></button></li>'
-           % (esc(SKETCH_LINE), len(SKETCH), esc(SKETCH[0]["src"]), esc(cover["src"]), rings))
-    pages_json = json.dumps([{"src": p["src"], "alt": p["alt"]} for p in SKETCH]).replace("</", "<\\/")
+           '<a href="art/">Sketchbook</a> <span class="line">%s %d pages so far.</span></p></li>'
+           % (esc(SKETCH_LINE), len(SKETCH)))
 
     rows = "\n".join(
         '<li class="row" style="--i:%d"><time datetime="%s">%s</time>'
@@ -239,7 +225,6 @@ def render(ps, source, avatar=None):
         "rows": rows,
         "work": work,
         "art": art,
-        "pages_json": pages_json,
         "hire": hire,
         "cache_note": cache_note,
         "rules": rules,
@@ -264,7 +249,6 @@ TEMPLATE = """<meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
-<link rel="stylesheet" href="sketchbook/book.css">
 <style>
 /* ----------------------------------------------------------------------------
    Palette and faces are Out Baby Out's, read out of that repo.
@@ -356,11 +340,6 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 .foot a{text-decoration-color:var(--dim);text-underline-offset:3px}
 .foot b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
 
-/* ---- art: a link-like button; the 3D book's own styles are sketchbook/book.css */
-.what .open{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;
-  text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px;
-  transition:color 120ms ease,text-decoration-color 120ms ease}
-@media (hover:hover){.what .open:hover{color:var(--hot);text-decoration-color:var(--hot)}}
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.row{animation:none}}
 
@@ -442,9 +421,106 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   setInterval(tick, 15000);
 })();
 </script>
-<script type="application/json" id="sketch-pages">%(pages_json)s</script>
-<script src="sketchbook/book.js" defer></script>
 </script>
+"""
+
+
+# ---- art/: his own page for the things he makes that aren't code ------------
+ART_OUT = "art/index.html"
+
+
+def closed_book(pre):
+    """The closed spiral sketchbook. `pre` reaches the site root from the page.
+    book.js copies this cover onto the open book, so there is one cover."""
+    stick = lambda i: '<span class="cv-st s%d"><img src="%s%s" alt="" loading="lazy"></span>' % (
+        i + 1, pre, esc(SKETCH[(SKETCH_COVER, 1)[i]]["src"]))
+    return ('<button class="sketch3d" type="button" data-page="1" aria-label="Open the sketchbook">'
+            '<span class="b3"><span class="b3-back"></span><span class="b3-edge b3-right"></span>'
+            '<span class="b3-edge b3-top"></span><span class="b3-edge b3-bottom"></span>'
+            '<span class="b3-first"><img src="%s%s" alt="" loading="lazy"></span>'
+            '<span class="b3-cover cv"><span class="cv-t">Sketch<br>book<b>.</b></span>%s%s'
+            '<span class="cv-dot">%d<br>pages</span>'
+            '<span class="cv-m">Gokul Sai &middot; vol. 01</span><span class="cv-band"></span></span>'
+            '<span class="b3-rings" aria-hidden="true">%s</span></span>'
+            '<span class="b3-shadow" aria-hidden="true"></span></button>'
+            % (pre, esc(SKETCH[0]["src"]), stick(1), stick(0), len(SKETCH), "<i></i>" * 11))
+
+
+def render_art():
+    # The page shares the home page's stylesheet and clock, lifted out of TEMPLATE
+    # (whose % signs are doubled for formatting) so the two can never drift apart.
+    style = TEMPLATE[TEMPLATE.index("<style>") + 7:TEMPLATE.index("</style>")].replace("%%", "%")
+    clock = TEMPLATE[TEMPLATE.index("<script>"):TEMPLATE.index("</script>") + 9]
+    links = "".join('<a href="%s">%s</a>' % (esc(u), esc(n)) for n, u in LINKS if u)
+    pages = json.dumps([{"src": "../" + p["src"], "alt": p["alt"]} for p in SKETCH]).replace("</", "<\\/")
+    page = ART_TEMPLATE
+    for key, val in (("style", style), ("clock", clock), ("links", links), ("book", closed_book("../")),
+                     ("line", esc(SKETCH_LINE)), ("n", str(len(SKETCH))), ("pages", pages),
+                     ("year", str(date.today().year))):
+        page = page.replace("{{%s}}" % key, val)
+    return page
+
+
+ART_TEMPLATE = """<meta charset="utf-8">
+<title>Art · Gokul Sai</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Gokul Sai's sketchbook: open it and turn the pages.">
+<meta property="og:title" content="Art · Gokul Sai">
+<meta property="og:description" content="His sketchbook: open it and turn the pages.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../sketchbook/book.css">
+<style>{{style}}
+/* ---- the art page: words on the left, the book floating on the right ---- */
+.art{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);align-items:center;
+  min-height:calc(100dvh - 180px)}
+.art h1{font:400 clamp(72px,12vw,168px)/.84 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:10px 0 28px}
+.art h1 .dot{color:var(--hot)}
+.art h2{font:700 12px/16px var(--mono);margin:0 0 6px;color:var(--chalk)}
+.art .tag{margin:0 0 6px;max-width:44ch}
+.art .meta{margin:0;font-family:var(--mono);color:var(--dim)}
+.art .home{display:inline-block;margin-top:28px;font-family:var(--mono);color:var(--chalk);
+  text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px}
+@media (hover:hover){.art .home:hover{color:var(--hot);text-decoration-color:var(--hot)}}
+.art .sketch3d{--bw:clamp(240px,26vw,340px)}
+.art .stage{padding:20px 48px 56px 24px}
+@media (max-width:640px){
+  .art{grid-template-columns:1fr;gap:12px;min-height:0}
+  .art .stage{justify-self:center;padding:24px 18px 56px 18px}
+  .art .sketch3d{--bw:min(72vw,280px)}
+}
+</style>
+
+<div class="monogram" aria-hidden="true">GS</div>
+<div class="page">
+<header class="bar">
+  <a class="word" href="../">Gokul<span class="dot">.</span></a>
+  <nav class="links">{{links}}</nav>
+</header>
+
+<main>
+<section class="art">
+  <div>
+    <h1>Art<span class="dot">.</span></h1>
+    <h2>Sketchbook, vol. 01</h2>
+    <p class="tag">{{line}}</p>
+    <p class="meta">{{n}} pages so far. Tap the book to open it, then drag the pages to turn them.</p>
+    <a class="home" href="../">Back to the home page</a>
+  </div>
+  <div class="stage">{{book}}</div>
+</section>
+</main>
+
+<footer class="bar foot">
+  <span>&copy; {{year}} Gokul Sai</span>
+  <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
+</footer>
+</div>
+
+{{clock}}
+<script type="application/json" id="sketch-pages">{{pages}}</script>
+<script src="../sketchbook/book.js" defer></script>
 """
 
 
@@ -532,15 +608,19 @@ def check():
     workhtml = html[wstart:html.index("</ul>", wstart)]
     assert workhtml.count('<li class="row job"') == len(WORK), "every work item is shown"
     assert all('href="%s"' % u in workhtml for _k, _n, u, _l in WORK), "work links go where they say"
-    # Art: every sketchbook page is in the book, on disk, described, and counted from the files.
-    m = re.search(r'<script type="application/json" id="sketch-pages">(.*?)</script>', html, re.S)
+    # Art: the home page row links to the art page, which holds the book. Every
+    # page is in the book, on disk (seen from art/), described, and counted from the files.
+    assert '<a href="art/">Sketchbook</a>' in html and "%d pages so far" % len(SKETCH) in html, "the Art row"
+    art = render_art()
+    m = re.search(r'<script type="application/json" id="sketch-pages">(.*?)</script>', art, re.S)
     book = json.loads(m.group(1)) if m else []
     assert len(book) == len(SKETCH) >= 1, "every page is in the book's data"
-    assert all(os.path.exists(p["src"]) and p["alt"] for p in book), "each page has its file and alt text"
-    assert all(os.path.exists(f) and ('href="%s"' % f in html or 'src="%s"' % f in html)
-               for f in ("sketchbook/book.css", "sketchbook/book.js")), "the book's code ships and is linked"
-    assert 'class="sketch3d"' in html, "the closed book floats in the section"
-    assert "%d pages so far" % len(SKETCH) in html, "the page count comes from the files"
+    assert all(os.path.exists(os.path.normpath(os.path.join("art", p["src"]))) and p["alt"] for p in book), \
+        "each page has its file and alt text"
+    assert all(os.path.exists(f) and ('"../%s"' % f) in art for f in ("sketchbook/book.css", "sketchbook/book.js")), \
+        "the book's code ships and is linked"
+    assert art.count('class="sketch3d"') == 1 and "{{" not in art and "%%" not in art, "the art page is filled in"
+    assert "%d<br>pages" % len(SKETCH) in art, "the cover's page count comes from the files"
     # A stranger can reach him without decoding anything.
     assert 'href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a>' in html, \
         "the email is written out on the page"
@@ -565,5 +645,8 @@ if __name__ == "__main__":
                    if (r.get("owner") or {}).get("avatar_url")), None)
     with io.open(OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write(render(ps, source, avatar))
+    os.makedirs(os.path.dirname(ART_OUT), exist_ok=True)
+    with io.open(ART_OUT, "w", encoding="utf-8", newline="\n") as f:
+        f.write(render_art())
     print("wrote %s from %s: %d milestones, %d projects counted"
           % (OUT, source, len(MILESTONES), len(ps)))

@@ -11,7 +11,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
-<link rel="stylesheet" href="sketchbook/book.css">
 <style>
 /* ----------------------------------------------------------------------------
    Palette and faces are Out Baby Out's, read out of that repo.
@@ -103,11 +102,6 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 .foot a{text-decoration-color:var(--dim);text-underline-offset:3px}
 .foot b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
 
-/* ---- art: a link-like button; the 3D book's own styles are sketchbook/book.css */
-.what .open{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;
-  text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px;
-  transition:color 120ms ease,text-decoration-color 120ms ease}
-@media (hover:hover){.what .open:hover{color:var(--hot);text-decoration-color:var(--hot)}}
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.row{animation:none}}
 
@@ -153,7 +147,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 <section class="sec">
   <h2>Art</h2>
   <ul class="work">
-<li class="row job"><span class="kind">Sketches</span><p class="what"><button class="open" type="button" data-page="1">Sketchbook</button> <span class="line">My new sketchbook: a cast of characters with their own bios, and some fashion sketches. 6 pages so far.</span></p></li><li class="stage"><button class="sketch3d" type="button" data-page="1" aria-label="Open the sketchbook"><span class="b3"><span class="b3-back"></span><span class="b3-edge b3-right"></span><span class="b3-edge b3-top"></span><span class="b3-edge b3-bottom"></span><span class="b3-first"><img src="sketchbook/01-fwends.webp" alt="" loading="lazy"></span><span class="b3-cover"><span class="b3-t">Sketch<br>book<b>.</b></span><span class="b3-sticker"><img src="sketchbook/03-the-fool.webp" alt="" loading="lazy"></span><span class="b3-s">Gokul Sai &middot; vol. 01</span></span><span class="b3-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="b3-shadow" aria-hidden="true"></span></button></li>
+<li class="row job"><span class="kind">Sketches</span><p class="what"><a href="art/">Sketchbook</a> <span class="line">My new sketchbook: a cast of characters with their own bios, and some fashion sketches. 6 pages so far.</span></p></li>
   </ul>
 </section>
 
@@ -182,7 +176,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 
 <footer class="bar foot">
   <span>&copy; 2026 Gokul Sai</span>
-  <span class="mid">Project count read from GitHub 2026-10-25 10:54 UTC</span>
+  <span class="mid">Project count read from GitHub 2026-10-25 11:01 UTC</span>
   <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
 </footer>
 </div>
@@ -202,6 +196,4 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   setInterval(tick, 15000);
 })();
 </script>
-<script type="application/json" id="sketch-pages">[{"src": "sketchbook/01-fwends.webp", "alt": "Pencil page of the cast: a boy with glasses, a cat in a frog hat, Ethan with spiral eyes, and small friends on a skateboard, with handwritten notes."}, {"src": "sketchbook/02-nigel.webp", "alt": "Pencil page: Nigel in a hood saying OK!, with his bio: loves music and art, still figuring it out. Peace."}, {"src": "sketchbook/03-the-fool.webp", "alt": "Pencil page: The Fool, a jester framed like a tarot card, and a grinning creature below."}, {"src": "sketchbook/04-tim-and-bob.webp", "alt": "Pencil page: Tim in a hood with a heart, and Bob the cat, the most intelligent cat out there."}, {"src": "sketchbook/05-corset.webp", "alt": "Coloured pencil fashion sketch: a laced corset with a bow on a dress form, in pink and orange."}, {"src": "sketchbook/06-bustier.webp", "alt": "Coloured pencil fashion sketch: a bustier with a flower on a mannequin, in pink and orange."}]</script>
-<script src="sketchbook/book.js" defer></script>
 </script>

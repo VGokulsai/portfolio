@@ -1,0 +1,180 @@
+<meta charset="utf-8">
+<title>Art · Gokul Sai</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Gokul Sai's sketchbook: open it and turn the pages.">
+<meta property="og:title" content="Art · Gokul Sai">
+<meta property="og:description" content="His sketchbook: open it and turn the pages.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="../sketchbook/book.css">
+<style>
+/* ----------------------------------------------------------------------------
+   Palette and faces are Out Baby Out's, read out of that repo.
+
+   The layout follows matthewnpark.com, measured at 1280x800 on 14 Sept 2026:
+   a wordmark top left and short text links top right at a 32px margin; a list
+   with no rules or panels where every row is a grey mono date and one 12px
+   line, 16px tall, rows 32px apart, 104px from date to text; a large thin
+   outline monogram behind it all; a footer bar with the year on the left and a
+   live clock on the right. What stays ours: the dark ground, the game's faces,
+   and a footer that says when its one number was read.
+   ------------------------------------------------------------------------- */
+:root{
+  --field:#0F1310; --panel:#191E17; --line:#2C352A;
+  --chalk:#F2F4E9; --dim:#8C9682;
+  --hot:#E8FF3F; --vish:#E0523B; --amrit:#5FD08A;
+
+  --display:Anton,"Arial Narrow",sans-serif;
+  --ui:"Instrument Sans",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--field);color:var(--chalk);font-family:var(--ui);
+  font-size:12px;line-height:16px;letter-spacing:-.01em;
+  -webkit-font-smoothing:antialiased}
+a{color:inherit}
+::selection{background:var(--hot);color:var(--field)}
+:focus-visible{outline:2px solid var(--hot);outline-offset:3px}
+
+/* ---- the monogram: thin outline, behind everything, never in the way ---- */
+.monogram{position:fixed;right:7vw;top:50%;transform:translateY(-52%);
+  font-family:var(--display);font-size:min(52vh,36vw);line-height:.8;
+  letter-spacing:.02em;color:transparent;-webkit-text-stroke:1px var(--hot);
+  opacity:.28;pointer-events:none;user-select:none;z-index:0}
+
+.page{position:relative;z-index:1;min-height:100vh;display:flex;
+  flex-direction:column;padding:32px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+
+.word{font-family:var(--display);font-size:24px;line-height:24px;
+  text-transform:uppercase;letter-spacing:.01em;text-decoration:none}
+.word .dot{color:var(--hot)}
+.links{display:flex;gap:22px;font-family:var(--mono);font-size:12px}
+/* The codes are 16px tall, which is a missed tap on a phone. Padding with an
+   equal negative margin gives each one a 44px hit area without moving a pixel
+   of the layout. */
+.links a{text-decoration:none;color:var(--chalk);transition:color 120ms ease;
+  display:inline-block;padding:14px 4px;margin:-14px -4px}
+@media (hover:hover){.links a:hover{color:var(--hot)}}
+
+main{flex:1;padding:40px 0 32px}
+
+/* The intro paragraph and the three rules, kept from the first version of
+   this page and shown in full rather than folded behind a click. */
+.tag{margin:0 0 12px;max-width:56ch;color:var(--dim)}
+.hire{margin:0 0 8px;color:var(--chalk)}
+.hire b{font-weight:500}
+.hire a,.what a{text-decoration:underline;text-decoration-color:var(--dim);
+  text-underline-offset:3px;transition:color 120ms ease,text-decoration-color 120ms ease}
+@media (hover:hover){.hire a:hover,.what a:hover{color:var(--hot);text-decoration-color:var(--hot)}}
+.tag b{color:var(--chalk);font-weight:500}
+.sec{margin-top:32px}
+.how{max-width:600px}
+.sec h2{font:400 10px/16px var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 12px}
+.work{display:flex;flex-direction:column;gap:16px}
+/* The kind column is as wide as a date, so Work and Timeline share one edge. */
+time,.kind{min-width:58px}
+.kind{flex:none;font-family:var(--mono);color:var(--dim)}
+.line{color:var(--dim)}
+.rules{display:grid;gap:12px}
+.rule h3{font:700 12px/16px var(--mono);margin:0;color:var(--chalk)}
+.rule p{margin:2px 0 0;color:var(--dim);max-width:60ch}
+
+/* ---- the list ------------------------------------------------------------ */
+ul{list-style:none;margin:0;padding:0}
+.ledger{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;align-items:baseline;gap:104px;min-width:0;
+  animation:rise .5s var(--ease) both;animation-delay:calc(var(--i) * 35ms)}
+time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
+  font-variant-numeric:tabular-nums}
+.what{margin:0;min-width:0;max-width:min(78ch,58vw);color:var(--chalk)}
+
+/* ---- footer bar ---------------------------------------------------------- */
+.foot{color:var(--dim);flex-wrap:wrap}
+.foot .mid{text-align:center}
+.foot a{text-decoration-color:var(--dim);text-underline-offset:3px}
+.foot b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
+
+@keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.row{animation:none}}
+
+@media (max-width:640px){
+  .page{padding:20px}
+  .row{gap:20px}
+  .what{max-width:none}
+  header.bar{flex-wrap:wrap;row-gap:14px}
+  /* 28px between wrapped rows: each link has a 44px tap area on a 16px line,
+     so anything tighter lets a tap between rows land on the wrong link. */
+  .links{gap:28px 18px;flex-wrap:wrap}
+  .foot{flex-direction:column;align-items:flex-start;gap:6px}
+  .foot .mid{text-align:left}
+  .monogram{right:-6vw;font-size:58vw;opacity:.18}
+}
+
+/* ---- the art page: words on the left, the book floating on the right ---- */
+.art{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);align-items:center;
+  min-height:calc(100dvh - 180px)}
+.art h1{font:400 clamp(72px,12vw,168px)/.84 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:10px 0 28px}
+.art h1 .dot{color:var(--hot)}
+.art h2{font:700 12px/16px var(--mono);margin:0 0 6px;color:var(--chalk)}
+.art .tag{margin:0 0 6px;max-width:44ch}
+.art .meta{margin:0;font-family:var(--mono);color:var(--dim)}
+.art .home{display:inline-block;margin-top:28px;font-family:var(--mono);color:var(--chalk);
+  text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px}
+@media (hover:hover){.art .home:hover{color:var(--hot);text-decoration-color:var(--hot)}}
+.art .sketch3d{--bw:clamp(240px,26vw,340px)}
+.art .stage{padding:20px 48px 56px 24px}
+@media (max-width:640px){
+  .art{grid-template-columns:1fr;gap:12px;min-height:0}
+  .art .stage{justify-self:center;padding:24px 18px 56px 18px}
+  .art .sketch3d{--bw:min(72vw,280px)}
+}
+</style>
+
+<div class="monogram" aria-hidden="true">GS</div>
+<div class="page">
+<header class="bar">
+  <a class="word" href="../">Gokul<span class="dot">.</span></a>
+  <nav class="links"><a href="https://github.com/VGokulsai">GitHub</a><a href="https://banyanmakers.pages.dev">Banyan</a><a href="https://vgokulsai.github.io/journal/">Journal</a><a href="https://vgokulsai.github.io/outbabyout/">Out Baby Out</a><a href="https://instagram.com/gokulsai_2010">Instagram</a><a href="mailto:gokulsai1004@gmail.com">Email</a></nav>
+</header>
+
+<main>
+<section class="art">
+  <div>
+    <h1>Art<span class="dot">.</span></h1>
+    <h2>Sketchbook, vol. 01</h2>
+    <p class="tag">My new sketchbook: a cast of characters with their own bios, and some fashion sketches.</p>
+    <p class="meta">6 pages so far. Tap the book to open it, then drag the pages to turn them.</p>
+    <a class="home" href="../">Back to the home page</a>
+  </div>
+  <div class="stage"><button class="sketch3d" type="button" data-page="1" aria-label="Open the sketchbook"><span class="b3"><span class="b3-back"></span><span class="b3-edge b3-right"></span><span class="b3-edge b3-top"></span><span class="b3-edge b3-bottom"></span><span class="b3-first"><img src="../sketchbook/01-fwends.webp" alt="" loading="lazy"></span><span class="b3-cover cv"><span class="cv-t">Sketch<br>book<b>.</b></span><span class="cv-st s2"><img src="../sketchbook/02-nigel.webp" alt="" loading="lazy"></span><span class="cv-st s1"><img src="../sketchbook/03-the-fool.webp" alt="" loading="lazy"></span><span class="cv-dot">6<br>pages</span><span class="cv-m">Gokul Sai &middot; vol. 01</span><span class="cv-band"></span></span><span class="b3-rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="b3-shadow" aria-hidden="true"></span></button></div>
+</section>
+</main>
+
+<footer class="bar foot">
+  <span>&copy; 2026 Gokul Sai</span>
+  <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
+</footer>
+</div>
+
+<script>
+/* A live Hyderabad clock, bottom right. Hidden without JavaScript rather than
+   showing a time that never moves. */
+(function () {
+  var wrap = document.getElementById("clock-wrap");
+  var el = document.getElementById("clock");
+  if (!wrap || !el || !window.Intl) return;
+  var fmt = new Intl.DateTimeFormat("en-GB", {timeZone: "Asia/Kolkata",
+    hour: "2-digit", minute: "2-digit", hour12: false});
+  function tick() { el.textContent = fmt.format(new Date()); }
+  tick();
+  wrap.hidden = false;
+  setInterval(tick, 15000);
+})();
+</script>
+<script type="application/json" id="sketch-pages">[{"src": "../sketchbook/01-fwends.webp", "alt": "Pencil page of the cast: a boy with glasses, a cat in a frog hat, Ethan with spiral eyes, and small friends on a skateboard, with handwritten notes."}, {"src": "../sketchbook/02-nigel.webp", "alt": "Pencil page: Nigel in a hood saying OK!, with his bio: loves music and art, still figuring it out. Peace."}, {"src": "../sketchbook/03-the-fool.webp", "alt": "Pencil page: The Fool, a jester framed like a tarot card, and a grinning creature below."}, {"src": "../sketchbook/04-tim-and-bob.webp", "alt": "Pencil page: Tim in a hood with a heart, and Bob the cat, the most intelligent cat out there."}, {"src": "../sketchbook/05-corset.webp", "alt": "Coloured pencil fashion sketch: a laced corset with a bow on a dress form, in pink and orange."}, {"src": "../sketchbook/06-bustier.webp", "alt": "Coloured pencil fashion sketch: a bustier with a flower on a mannequin, in pink and orange."}]</script>
+<script src="../sketchbook/book.js" defer></script>

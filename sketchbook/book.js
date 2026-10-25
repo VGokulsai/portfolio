@@ -42,10 +42,8 @@
       f.appendChild(img);
       f.dataset.page = i + 1;
     } else if (kind === "cover") {
-      f.className += " cover";
-      f.innerHTML = '<span class="t">Sketch<br>book<b>.</b></span>' +
-        '<span class="sticker"><img alt="" src="' + pages[Math.min(2, pages.length - 1)].src + '"></span>' +
-        '<span class="s">Gokul Sai &middot; vol. 01</span>';
+      f.className += " cv";
+      f.innerHTML = closed.querySelector(".cv").innerHTML;   // the same cover as the closed book
     } else if (kind === "inside") {
       f.className += " inside";
     } else if (kind === "end") {
