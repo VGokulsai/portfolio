@@ -246,6 +246,10 @@ def render(ps, source, avatar=None):
         "rows": rows,
         "work": work,
         "art": art,
+        "name": " ".join(
+            '<span class="w">%s</span>' % "".join('<span class="ch" style="--i:%d">%s</span>' % (i + j, c)
+                                               for j, c in enumerate(word))
+            for i, word in zip((0, 6), "Gokul Sai".split())),
         "sheet_hero": paper(tape % "t1", spark % "a", squig % "c"),
         "sheet_work": paper(tape % "t2", spark % "d"),
         "sheet_art": paper(tape % "t1", spark % "b"),
@@ -270,6 +274,7 @@ TORN = "M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L2
 TAGLINE = "I build tools that check whether something is true before you act on it. Hyderabad."
 
 TEMPLATE = """<meta charset="utf-8">
+<script>if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("motion")</script>
 <title>Gokul Sai</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="%(tagline)s">
@@ -428,6 +433,25 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.row{animation:none}}
 
+/* ---- arriving: the name sheet slaps onto the page, the name pops letter by
+   letter, the lines under it slide up, the tape sticks on last. Further down,
+   each sheet slides up into place as it scrolls into view. Only under .motion
+   (set in the head when motion is allowed), so nothing is ever hidden without it. */
+@keyframes slap{0%%{opacity:0;translate:0 -28px;scale:1.05}55%%{opacity:1;translate:0 5px;scale:.995}100%%{translate:0 0;scale:1}}
+@keyframes letter{from{opacity:0;translate:0 .45em;rotate:10deg}}
+@keyframes lift{from{opacity:0;translate:0 14px}}
+@keyframes stick{from{opacity:0;scale:1.35}}
+.motion .sheet.hero{animation:slap 720ms cubic-bezier(.23,1,.32,1) both}
+.motion .sheet.hero .ch{display:inline-block;animation:letter 560ms cubic-bezier(.23,1,.32,1) both;animation-delay:calc(260ms + var(--i) * 45ms)}
+.motion .sheet.hero .tag{animation:lift 520ms cubic-bezier(.23,1,.32,1) 700ms both}
+.motion .sheet.hero .hire{animation:lift 520ms cubic-bezier(.23,1,.32,1) 800ms both}
+.motion .sheet.hero .club{animation:lift 520ms cubic-bezier(.23,1,.32,1) 900ms both}
+.motion .sheet.hero .tape{animation:stick 420ms cubic-bezier(.23,1,.32,1) 560ms both}
+.motion .sheet:not(.hero){transition:opacity 600ms ease,translate 760ms cubic-bezier(.23,1,.32,1),rotate 760ms cubic-bezier(.23,1,.32,1)}
+.motion .sheet:not(.hero):not(.in){opacity:0;translate:0 70px;rotate:calc(var(--r) * -3)}
+.motion .sheet:not(.hero) .tape{transition:opacity 300ms ease 380ms,scale 420ms cubic-bezier(.23,1,.32,1) 380ms}
+.motion .sheet:not(.hero):not(.in) .tape{opacity:0;scale:1.35}
+
 @media (max-width:640px){
   .page{padding:20px}
   .row{gap:20px}
@@ -456,7 +480,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 <main class="sheets">
 <section class="sheet lime hero">%(sheet_hero)s
   <div>
-    <h1 class="loud">Gokul Sai<span class="dot">.</span></h1>
+    <h1 class="loud" aria-label="Gokul Sai."><span aria-hidden="true">%(name)s<span class="ch dot" style="--i:9">.</span></span></h1>
     <p class="tag">I build tools that check whether something is true before you
       act on it. <b>A zero means two things: nothing was there, or I could not
       look.</b> Most of what I build exists to tell those apart.</p>
@@ -510,6 +534,15 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 </div>
 
 <script>
+/* Sheets below the name slide up into place the first time they come into view. */
+(function () {
+  if (!document.documentElement.classList.contains("motion")) return;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, {threshold: 0.12});
+  [].forEach.call(document.querySelectorAll(".sheet:not(.hero)"), function (s) { io.observe(s); });
+})();
+
 /* A live Hyderabad clock, bottom right. Hidden without JavaScript rather than
    showing a time that never moves. */
 (function () {
@@ -562,7 +595,8 @@ def render_art():
     # The page shares the home page's stylesheet and clock, lifted out of TEMPLATE
     # (whose % signs are doubled for formatting) so the two can never drift apart.
     style = TEMPLATE[TEMPLATE.index("<style>") + 7:TEMPLATE.index("</style>")].replace("%%", "%")
-    clock = TEMPLATE[TEMPLATE.index("<script>"):TEMPLATE.index("</script>") + 9]
+    at = TEMPLATE.index("A live Hyderabad clock")          # the script block holding the clock
+    clock = TEMPLATE[TEMPLATE.rindex("<script>", 0, at):TEMPLATE.index("</script>", at) + 9]
     links = "".join('<a href="%s">%s</a>' % (esc(u), esc(n)) for n, u in LINKS if u)
     pages = json.dumps([{"src": "../" + p["src"], "alt": p["alt"], "w": p["w"], "h": p["h"], "nobind": p.get("nobind", False)} for p in SKETCH]).replace("</", "<\\/")
     page = ART_TEMPLATE
@@ -809,6 +843,8 @@ def check():
         "the book's code ships and is linked"
     assert art.count('class="sketch3d"') == 1 and "{{" not in art and "%%" not in art, "the art page is filled in"
     assert "%d<br>pages" % len(SKETCH) in art, "the cover's page count comes from the files"
+    assert "</span> <span class=\"w\">" in html, "the animated name keeps the space between Gokul and Sai"
+    assert "Intl.DateTimeFormat" in art and "Asia/Kolkata" in art, "the art page carries the home page clock"
     assert 'member of Hack Club <a href="https://hackclub.com/slack/">join</a>' in html, "the Hack Club sticker and its join link"
     # A stranger can reach him without decoding anything.
     assert 'href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a>' in html, \

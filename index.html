@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<script>if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("motion")</script>
 <title>Gokul Sai</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="I build tools that check whether something is true before you act on it. Hyderabad.">
@@ -162,6 +163,25 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.row{animation:none}}
 
+/* ---- arriving: the name sheet slaps onto the page, the name pops letter by
+   letter, the lines under it slide up, the tape sticks on last. Further down,
+   each sheet slides up into place as it scrolls into view. Only under .motion
+   (set in the head when motion is allowed), so nothing is ever hidden without it. */
+@keyframes slap{0%{opacity:0;translate:0 -28px;scale:1.05}55%{opacity:1;translate:0 5px;scale:.995}100%{translate:0 0;scale:1}}
+@keyframes letter{from{opacity:0;translate:0 .45em;rotate:10deg}}
+@keyframes lift{from{opacity:0;translate:0 14px}}
+@keyframes stick{from{opacity:0;scale:1.35}}
+.motion .sheet.hero{animation:slap 720ms cubic-bezier(.23,1,.32,1) both}
+.motion .sheet.hero .ch{display:inline-block;animation:letter 560ms cubic-bezier(.23,1,.32,1) both;animation-delay:calc(260ms + var(--i) * 45ms)}
+.motion .sheet.hero .tag{animation:lift 520ms cubic-bezier(.23,1,.32,1) 700ms both}
+.motion .sheet.hero .hire{animation:lift 520ms cubic-bezier(.23,1,.32,1) 800ms both}
+.motion .sheet.hero .club{animation:lift 520ms cubic-bezier(.23,1,.32,1) 900ms both}
+.motion .sheet.hero .tape{animation:stick 420ms cubic-bezier(.23,1,.32,1) 560ms both}
+.motion .sheet:not(.hero){transition:opacity 600ms ease,translate 760ms cubic-bezier(.23,1,.32,1),rotate 760ms cubic-bezier(.23,1,.32,1)}
+.motion .sheet:not(.hero):not(.in){opacity:0;translate:0 70px;rotate:calc(var(--r) * -3)}
+.motion .sheet:not(.hero) .tape{transition:opacity 300ms ease 380ms,scale 420ms cubic-bezier(.23,1,.32,1) 380ms}
+.motion .sheet:not(.hero):not(.in) .tape{opacity:0;scale:1.35}
+
 @media (max-width:640px){
   .page{padding:20px}
   .row{gap:20px}
@@ -190,7 +210,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 <main class="sheets">
 <section class="sheet lime hero"><svg class="torn top" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"/></svg><svg class="torn bottom" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"/></svg><span class="tape t1" aria-hidden="true"></span><svg class="doodle a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg><svg class="doodle c" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg>
   <div>
-    <h1 class="loud">Gokul Sai<span class="dot">.</span></h1>
+    <h1 class="loud" aria-label="Gokul Sai."><span aria-hidden="true"><span class="w"><span class="ch" style="--i:0">G</span><span class="ch" style="--i:1">o</span><span class="ch" style="--i:2">k</span><span class="ch" style="--i:3">u</span><span class="ch" style="--i:4">l</span></span> <span class="w"><span class="ch" style="--i:6">S</span><span class="ch" style="--i:7">a</span><span class="ch" style="--i:8">i</span></span><span class="ch dot" style="--i:9">.</span></span></h1>
     <p class="tag">I build tools that check whether something is true before you
       act on it. <b>A zero means two things: nothing was there, or I could not
       look.</b> Most of what I build exists to tell those apart.</p>
@@ -251,12 +271,21 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 
 <footer class="bar foot">
   <span>&copy; 2026 Gokul Sai</span>
-  <span class="mid">Project count read from GitHub 2026-10-25 11:52 UTC</span>
+  <span class="mid">Project count read from GitHub 2026-10-25 15:46 UTC</span>
   <span id="clock-wrap" hidden>Hyderabad <b id="clock"></b></span>
 </footer>
 </div>
 
 <script>
+/* Sheets below the name slide up into place the first time they come into view. */
+(function () {
+  if (!document.documentElement.classList.contains("motion")) return;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, {threshold: 0.12});
+  [].forEach.call(document.querySelectorAll(".sheet:not(.hero)"), function (s) { io.observe(s); });
+})();
+
 /* A live Hyderabad clock, bottom right. Hidden without JavaScript rather than
    showing a time that never moves. */
 (function () {

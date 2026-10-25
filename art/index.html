@@ -160,6 +160,25 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.row{animation:none}}
 
+/* ---- arriving: the name sheet slaps onto the page, the name pops letter by
+   letter, the lines under it slide up, the tape sticks on last. Further down,
+   each sheet slides up into place as it scrolls into view. Only under .motion
+   (set in the head when motion is allowed), so nothing is ever hidden without it. */
+@keyframes slap{0%{opacity:0;translate:0 -28px;scale:1.05}55%{opacity:1;translate:0 5px;scale:.995}100%{translate:0 0;scale:1}}
+@keyframes letter{from{opacity:0;translate:0 .45em;rotate:10deg}}
+@keyframes lift{from{opacity:0;translate:0 14px}}
+@keyframes stick{from{opacity:0;scale:1.35}}
+.motion .sheet.hero{animation:slap 720ms cubic-bezier(.23,1,.32,1) both}
+.motion .sheet.hero .ch{display:inline-block;animation:letter 560ms cubic-bezier(.23,1,.32,1) both;animation-delay:calc(260ms + var(--i) * 45ms)}
+.motion .sheet.hero .tag{animation:lift 520ms cubic-bezier(.23,1,.32,1) 700ms both}
+.motion .sheet.hero .hire{animation:lift 520ms cubic-bezier(.23,1,.32,1) 800ms both}
+.motion .sheet.hero .club{animation:lift 520ms cubic-bezier(.23,1,.32,1) 900ms both}
+.motion .sheet.hero .tape{animation:stick 420ms cubic-bezier(.23,1,.32,1) 560ms both}
+.motion .sheet:not(.hero){transition:opacity 600ms ease,translate 760ms cubic-bezier(.23,1,.32,1),rotate 760ms cubic-bezier(.23,1,.32,1)}
+.motion .sheet:not(.hero):not(.in){opacity:0;translate:0 70px;rotate:calc(var(--r) * -3)}
+.motion .sheet:not(.hero) .tape{transition:opacity 300ms ease 380ms,scale 420ms cubic-bezier(.23,1,.32,1) 380ms}
+.motion .sheet:not(.hero):not(.in) .tape{opacity:0;scale:1.35}
+
 @media (max-width:640px){
   .page{padding:20px}
   .row{gap:20px}
@@ -298,6 +317,15 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 </div>
 
 <script>
+/* Sheets below the name slide up into place the first time they come into view. */
+(function () {
+  if (!document.documentElement.classList.contains("motion")) return;
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, {threshold: 0.12});
+  [].forEach.call(document.querySelectorAll(".sheet:not(.hero)"), function (s) { io.observe(s); });
+})();
+
 /* A live Hyderabad clock, bottom right. Hidden without JavaScript rather than
    showing a time that never moves. */
 (function () {
