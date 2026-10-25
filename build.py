@@ -513,7 +513,7 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 
 <section class="sheet blue sec">%(sheet_time)s
   <div>
-    <h2 class="loud">Timeline.</h2>
+    <h2 class="loud">Lore.</h2>
     <ul class="ledger">
 %(rows)s
     </ul>
