@@ -1,8 +1,7 @@
 /* The sketchbook. The closed book in the Art section flies to the middle of the
    screen, opens on its spiral binding, and turns its pages in 3D: click a side,
-   use the arrow keys, or drag a page and let go. Wide screens show two-page
-   spreads with drawings on both sides of a leaf; phones show one page at a
-   time. Every motion is a small tween on numbers, so a drag can hand its angle
+   use the arrow keys, or drag a page and let go. Always a two-page spread
+   with drawings on both sides of a leaf, like a real book. Every motion is a small tween on numbers, so a drag can hand its angle
    straight to the release animation. */
 (function () {
   var data = document.getElementById("sketch-pages");
@@ -30,7 +29,7 @@
   var hint = dlg.querySelector(".sk-hint"), count = dlg.querySelector(".sk-count");
   var prev = dlg.querySelector(".prev"), next = dlg.querySelector(".next");
 
-  var W, H, wide, leaves = [], at = 0, busy = null, opened = false;
+  var W, H, leaves = [], at = 0, busy = null, opened = false;
   var cam = {dx: 0, dy: 0, s: 1, rx: 10, ry: 0, rz: 0, x: 0};   // the whole book's pose
 
   // ---- building ------------------------------------------------------------
@@ -57,16 +56,11 @@
   }
 
   function size() {
-    wide = innerWidth >= 760;
-    var ratio = 420 / 580;
-    if (wide) {
-      H = Math.min(innerHeight * 0.74, 660);
-      W = H * ratio;
-      if (2 * W > innerWidth - 80) { W = (innerWidth - 80) / 2; H = W / ratio; }
-    } else {
-      W = Math.min(innerWidth - 56, innerHeight * 0.66 * ratio);
-      H = W / ratio;
-    }
+    // always a two-page spread, like a real book; phones get a smaller one
+    var ratio = 420 / 580, room = innerWidth - (innerWidth >= 760 ? 80 : 20);
+    H = Math.min(innerHeight * 0.74, 660);
+    W = H * ratio;
+    if (2 * W > room) { W = room / 2; H = W / ratio; }
     bookEl.style.setProperty("--w", W + "px");
     bookEl.style.setProperty("--h", H + "px");
   }
@@ -79,10 +73,7 @@
     bookEl.appendChild(under);
     // the sides in reading order; each leaf takes a front and a back
     var sides = [side("cover"), side("inside")];
-    pages.forEach(function (p, i) {
-      sides.push(side("page", i));
-      if (!wide) sides.push(side("inside"));   // phones: one drawing per leaf
-    });
+    pages.forEach(function (p, i) { sides.push(side("page", i)); });
     if (sides.length % 2) sides.push(side("inside"));
     leaves = [];
     for (var i = 0; i < sides.length; i += 2) {
@@ -107,7 +98,7 @@
   function drawLeaf(leaf, i) {
     i = leaves.indexOf(leaf);
     var t = -leaf.a / 180;                          // 0 lying right, 1 lying left
-    var lift = Math.sin(t * Math.PI) * (wide ? 36 : 24);
+    var lift = Math.sin(t * Math.PI) * W * 0.08;
     var stack = t > 0.5 ? (i + 1) * 0.6 : (leaves.length - i) * 0.6;
     leaf.style.transform = "translateZ(" + (stack + lift).toFixed(2) + "px) rotateY(" + leaf.a.toFixed(2) + "deg)";
     leaf.firstChild.style.setProperty("--shade", Math.min(1, t * 2) * 0.7);
@@ -117,12 +108,12 @@
     bookEl.style.transform = "translate(" + cam.dx + "px," + cam.dy + "px) translateX(" + cam.x + "px) scale(" + cam.s +
       ") rotateX(" + cam.rx + "deg) rotateY(" + cam.ry + "deg) rotateZ(" + cam.rz + "deg)";
   }
-  function openX() { return wide ? 0 : -W / 2; }
+  function openX() { return 0; }   // open: the spine sits in the middle
 
   function label() {
     var shown = [];
     var left = at > 0 ? leaves[at - 1].lastChild : null, right = at < leaves.length ? leaves[at].firstChild : null;
-    if (wide && left && left.dataset.page) shown.push(+left.dataset.page);
+    if (left && left.dataset.page) shown.push(+left.dataset.page);
     if (right && right.dataset.page) shown.push(+right.dataset.page);
     count.textContent = at === 0 ? "Cover" : !shown.length ? "The end" :
       (shown.length === 2 ? "Pages " + shown[0] + "\u2013" + shown[1] : "Page " + shown[0]) + " of " + pages.length;
@@ -162,7 +153,7 @@
     if (opened) return;
     opened = true;
     build();
-    hint.textContent = wide ? "click a page, drag it, or use the arrow keys" : "swipe or tap to turn";
+    hint.textContent = matchMedia("(pointer: coarse)").matches ? "swipe or tap a page to turn" : "click a page, drag it, or use the arrow keys";
     hint.classList.remove("gone");
     var r = closed.getBoundingClientRect();
     cam = {dx: r.left + r.width / 2 - innerWidth / 2, dy: r.top + r.height / 2 - innerHeight / 2,
@@ -235,7 +226,7 @@
       stage.setPointerCapture(e.pointerId);
       hint.classList.add("gone");
     }
-    var span = wide ? W * 1.15 : W * 0.9;
+    var span = W * 1.15;
     drag.leaf.a = Math.max(-180, Math.min(0, drag.a0 + dx / span * 180));
     drawLeaf(drag.leaf);
   });
@@ -257,9 +248,9 @@
   function tap(e) {
     var b = bookEl.getBoundingClientRect();
     var inside = e.clientY > b.top && e.clientY < b.bottom &&
-      e.clientX > (wide ? innerWidth / 2 - W : b.left) && e.clientX < (wide ? innerWidth / 2 + W : b.right);
+      e.clientX > innerWidth / 2 - W && e.clientX < innerWidth / 2 + W;
     if (!inside) { shut(); return; }
-    turn(wide ? e.clientX > innerWidth / 2 : e.clientX > b.left + b.width * 0.4);
+    turn(e.clientX > innerWidth / 2);
   }
 
   addEventListener("resize", function () {
