@@ -40,6 +40,7 @@ SKIP = {USER}  # the profile repo is not a project
 # led to the other - and his first football match in 2023.
 # Replace any of them with the real date when it turns up.
 MILESTONES = [
+    ("2026-10-23", "Ships his first game"),
     ("2026-09-28", "Publishes a reproduction of an IIIT-Hyderabad paper"),
     ("2026-09-25", "Starts Banyan"),
     ("2026-09-18", "Publishes his first paper"),
@@ -73,6 +74,9 @@ WORK = [
     ("Game", "Out Baby Out", "https://%s.github.io/outbabyout/" % USER.lower(),
      "Real-life tag with a revive, made so children in orphanages and children's homes "
      "can have fun together. Twenty minutes, two sides, nobody is out for good."),
+    # His words (25 Oct 2026). True to the game's README: coached by Claude, most code typed by him.
+    ("Game", "Hyderabad traffic ah majaka nah", "https://%s.github.io/hyderabad-traffic-ah-majaka-nah/" % USER.lower(),
+     "My first game, built thanks to Hack Club: no engine, I typed most of the code myself."),
     ("Paper", "Reproducing an IIIT-Hyderabad paper",
      "https://github.com/VGokulsai/nllb-entity-mt/blob/master/paper/report-v1.pdf",
      "Fine-tuned a translation model to get names right, as a SemEval-2025 paper did: "
