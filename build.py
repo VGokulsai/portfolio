@@ -496,10 +496,29 @@ ART_TEMPLATE = """<meta charset="utf-8">
 /* ---- the art page: his loud side. Two full-bleed colour bands (lime for the
    sketches, his crayon pink for the songs), his own lines as the headlines,
    a black sticker for the aside, and hand-drawn sparkles in the margins. ---- */
-.art{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);align-items:center;
-  margin:0 -32px;padding:clamp(48px,7vw,96px) 32px;overflow:hidden}
-.art.sketches{background:var(--hot);color:#0F1310;min-height:calc(100dvh - 120px)}
-.art.records{background:#C2255C;color:var(--chalk);grid-template-columns:1fr;gap:28px}
+.page{overflow-x:clip}  /* the tilted sheets must not scroll the page sideways */
+.art{--band:var(--hot);position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);
+  align-items:center;margin:0 -32px;padding:clamp(56px,7vw,104px) 32px;
+  background:radial-gradient(var(--dots) 1.1px,transparent 1.5px) 0 0/13px 13px,var(--band)}
+.art.sketches{--band:var(--hot);--dots:rgba(15,19,16,.09);color:#0F1310;min-height:calc(100dvh - 120px);
+  margin-top:28px;transform:rotate(-.6deg);z-index:1}
+.art.sketches > *{transform:rotate(.6deg)}
+.art.records{--band:#C2255C;--dots:rgba(0,0,0,.12);color:var(--chalk);grid-template-columns:1fr;gap:28px;
+  margin-top:2px;margin-bottom:40px;transform:rotate(.5deg);z-index:2}
+.art.records > *{transform:rotate(-.5deg)}
+.art > .torn,.art > .tape{transform:none}
+/* torn paper along the top and bottom of each band */
+.torn{position:absolute;left:0;width:100%;height:30px;fill:var(--band);pointer-events:none}
+.torn.top{top:-29px}
+.torn.bottom{bottom:-29px;scale:1 -1}
+/* masking tape holding the sheets down */
+.tape{position:absolute;width:118px;height:30px;background:rgba(239,237,227,.82);z-index:3;pointer-events:none;
+  box-shadow:0 2px 4px rgba(0,0,0,.18);
+  -webkit-mask:linear-gradient(90deg,transparent 0 3px,#000 3px calc(100% - 3px),transparent calc(100% - 3px)),
+    repeating-linear-gradient(0deg,#000 0 3px,transparent 3px 5px);-webkit-mask-composite:source-over}
+.tape.t1{top:-40px;left:9%;rotate:-7deg}
+.tape.t2{top:-44px;right:14%;rotate:5deg}
+.tape.t3{bottom:-42px;left:22%;rotate:-4deg}
 .art.records h2{max-width:none}
 .art.records .rec-stage{justify-content:start}
 .art .label{margin:0 0 14px;font:700 11px/16px var(--mono);letter-spacing:.14em;text-transform:uppercase}
@@ -529,7 +548,8 @@ ART_TEMPLATE = """<meta charset="utf-8">
   @keyframes twinkle{to{scale:.8;opacity:.55}}
 }
 @media (max-width:640px){
-  .art{grid-template-columns:1fr;gap:12px;margin:0 -20px;padding:44px 20px}
+  .art{grid-template-columns:1fr;gap:12px;margin-left:-20px;margin-right:-20px;padding:52px 20px}
+  .tape{width:86px;height:24px}
   .art.sketches{min-height:0}
   .art .stage{justify-self:center;padding:24px 18px 56px 18px}
   .art .sketch3d{--bw:min(72vw,280px)}
@@ -546,6 +566,7 @@ ART_TEMPLATE = """<meta charset="utf-8">
 
 <main>
 <section class="art sketches">
+  <svg class="torn top" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"/></svg><svg class="torn bottom" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"/></svg><span class="tape t1" aria-hidden="true"></span>
   <svg class="doodle a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg><svg class="doodle b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg><svg class="doodle c" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg>
   <div>
     <p class="label">Art &middot; sketchbook vol. 01</p>
@@ -559,6 +580,7 @@ ART_TEMPLATE = """<meta charset="utf-8">
 </section>
 
 <section class="art records">
+  <svg class="torn top" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"/></svg><svg class="torn bottom" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"/></svg><span class="tape t2" aria-hidden="true"></span><span class="tape t3" aria-hidden="true"></span>
   <svg class="doodle d" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg><svg class="doodle e" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg>
   <div>
     <p class="label">Records &middot; on repeat</p>
@@ -571,10 +593,14 @@ ART_TEMPLATE = """<meta charset="utf-8">
       <div class="sleeves" style="--n:{{nrec}}">{{sleeves}}</div>
       <div class="crate-front"><span>On repeat</span></div>
     </div>
-    <div class="deck" aria-hidden="true">
-      <div class="platter"><div class="disc"><span class="hole"></span></div></div>
-      <div class="arm"><i></i><b></b></div>
-      <span class="knob"></span><span class="led"></span>
+    <div class="deck-wrap" aria-hidden="true">
+      <div class="deck">
+        <span class="deck-shadow"></span><span class="deck-side front"></span><span class="deck-side right"></span>
+        <div class="platter"><div class="disc"><span class="hole"></span></div></div>
+        <div class="arm"><i></i><b></b></div>
+        <span class="knob"></span><span class="led"></span>
+      </div>
+      <div class="notes"></div>
     </div>
   </div>
 </section>

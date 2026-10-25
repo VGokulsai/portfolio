@@ -1,12 +1,18 @@
-/* Records: click a sleeve in the crate and its record drops onto the turntable,
-   the arm swings over and it spins; click it again to stop. When the needle
-   lands there is a short vinyl crackle made in the browser (no audio file).
+/* Records: click a sleeve and it lifts out of the crate; its record drops onto
+   the 3D turntable from above, lands with a small thud and a needle crackle,
+   the arm swings over and it spins while notes drift up. Click it again to
+   stop; click another record and the first lifts off before the new one drops.
    Real songs plug in later: each record will get its own player. */
 (function () {
   var deck = document.querySelector(".deck");
   if (!deck) return;
-  var disc = deck.querySelector(".disc"), led = deck.querySelector(".led");
-  var now = document.querySelector(".now"), playing = null, timer = 0, ctx = null;
+  var disc = deck.querySelector(".disc"), led = deck.querySelector(".led"), notes = document.querySelector(".notes");
+  var now = document.querySelector(".now"), playing = null, timers = [], ctx = null, seen = true;
+  var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var NOTE = '<svg viewBox="0 0 24 24"><path d="M9 3v11.3A3.5 3.5 0 1 0 11 17V7h7V3z"/></svg>';
+
+  function later(fn, ms) { timers.push(setTimeout(fn, calm ? 0 : ms)); }
+  function clear() { timers.forEach(clearTimeout); timers = []; }
 
   function crackle() {
     try {
@@ -20,29 +26,50 @@
     } catch (e) { /* no sound is fine; the record still spins */ }
   }
 
-  function stop() {
-    if (playing) playing.classList.remove("out");
-    playing = null;
-    deck.classList.remove("on");
+  // one note every ~0.9 s from the record, only while it plays and is on screen
+  function note() {
+    if (!playing || calm) return;
+    if (seen) {
+      var n = document.createElement("span");
+      n.className = "note"; n.innerHTML = NOTE;
+      n.style.left = (36 + Math.random() * 46) + "%"; n.style.top = (24 + Math.random() * 18) + "%";
+      n.style.setProperty("--dx", (Math.random() * 60 - 30).toFixed(0) + "px");
+      n.addEventListener("animationend", function () { n.remove(); });
+      notes.appendChild(n);
+    }
+    later(note, 700 + Math.random() * 500);
+  }
+  if (window.IntersectionObserver) new IntersectionObserver(function (es) { seen = es[0].isIntersecting; }).observe(deck);
+
+  function idle() {
     led.textContent = "33 rpm · off";
     now.innerHTML = "Pick a record from the crate.";
   }
 
+  function drop(s) {
+    disc.style.setProperty("--c", s.style.getPropertyValue("--c"));
+    deck.classList.add("on");
+    led.textContent = "33 rpm · on";
+    now.innerHTML = '<span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Now spinning: <b>' +
+      s.dataset.title + "</b>" + (s.dataset.artist ? " · " + s.dataset.artist : "");
+    later(function () {                       // the record lands
+      deck.classList.remove("thud"); void deck.offsetWidth; deck.classList.add("thud");
+    }, 420);
+    later(crackle, 1050);                     // the needle meets the groove
+    later(note, 1300);
+  }
+
   [].forEach.call(document.querySelectorAll(".sleeve"), function (s) {
     s.addEventListener("click", function () {
-      if (playing === s) { stop(); return; }
-      if (playing) playing.classList.remove("out");
+      clear();
+      var was = playing;
+      if (was) was.classList.remove("out");
+      if (was === s) { playing = null; deck.classList.remove("on"); idle(); return; }
       playing = s;
       s.classList.add("out");
-      deck.classList.remove("on");
-      disc.style.setProperty("--c", s.style.getPropertyValue("--c"));
-      void deck.offsetWidth;                      // restart the drop for the new record
-      deck.classList.add("on");
-      led.textContent = "33 rpm · on";
-      now.innerHTML = "Now spinning: <b>" + s.dataset.title + "</b>" + (s.dataset.artist ? " · " + s.dataset.artist : "");
-      clearTimeout(timer);
-      timer = setTimeout(crackle, 850);           // when the needle lands
+      if (was) { deck.classList.remove("on"); later(function () { drop(s); }, 420); }   // lift the old one off first
+      else drop(s);
     });
   });
-  stop();
+  idle();
 })();
