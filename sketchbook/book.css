@@ -90,9 +90,12 @@
 .sk-face { position: absolute; inset: 0; overflow: hidden; backface-visibility: hidden; background: var(--sk-paper);
   border-radius: 1px 5px 5px 1px; }
 .sk-face.back { transform: rotateY(180deg); border-radius: 5px 1px 1px 5px; }
-.sk-face img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
-  padding: 5% 5% 5% 9%; mix-blend-mode: multiply; pointer-events: none; user-select: none; }
-.sk-face.back img { padding: 5% 9% 5% 5%; }
+/* the drawing fills the page edge to edge; the punched holes sit on top of it */
+.sk-face img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+  mix-blend-mode: multiply; pointer-events: none; user-select: none; }
+/* a wide drawing: each half shows its side of one image twice the page's width */
+.sk-face.half img { width: 200%; max-width: none; }
+.sk-face.half.r img { left: -100%; }
 /* punched holes down the bound edge of every page */
 .sk-face::before { content: ""; position: absolute; top: 3%; bottom: 3%; left: 6px; width: 10px;
   background: radial-gradient(circle at 5px 50%, rgba(15, 19, 16, .85) 3.2px, transparent 3.8px) 0 0 / 10px calc(var(--h) * .94 / 11) repeat-y; }

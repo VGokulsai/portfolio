@@ -33,7 +33,7 @@
   var cam = {dx: 0, dy: 0, s: 1, rx: 10, ry: 0, rz: 0, x: 0};   // the whole book's pose
 
   // ---- building ------------------------------------------------------------
-  function side(kind, i) {
+  function side(kind, i, half) {
     var f = document.createElement("div");
     f.className = "sk-face";
     if (kind === "page") {
@@ -41,6 +41,7 @@
       img.src = pages[i].src; img.alt = pages[i].alt; img.draggable = false;
       f.appendChild(img);
       f.dataset.page = i + 1;
+      if (half) f.className += " half " + half;               // one half of a drawing across the spread
     } else if (kind === "cover") {
       f.className += " cv";
       f.innerHTML = closed.querySelector(".cv").innerHTML;   // the same cover as the closed book
@@ -71,7 +72,14 @@
     bookEl.appendChild(under);
     // the sides in reading order; each leaf takes a front and a back
     var sides = [side("cover"), side("inside")];
-    pages.forEach(function (p, i) { sides.push(side("page", i)); });
+    // A landscape drawing spans the whole spread, across the binding, like a
+    // real sketchbook: its left half on a left page (a leaf's back, an odd
+    // position here), its right half on the next right page.
+    pages.forEach(function (p, i) {
+      if (p.w <= p.h) { sides.push(side("page", i)); return; }
+      if (sides.length % 2 === 0) sides.push(side("inside"));   // start it on a left page
+      sides.push(side("page", i, "l"), side("page", i, "r"));
+    });
     if (sides.length % 2) sides.push(side("inside"));
     leaves = [];
     for (var i = 0; i < sides.length; i += 2) {
@@ -114,7 +122,7 @@
     if (left && left.dataset.page) shown.push(+left.dataset.page);
     if (right && right.dataset.page) shown.push(+right.dataset.page);
     count.textContent = at === 0 ? "Cover" : !shown.length ? "The end" :
-      (shown.length === 2 ? "Pages " + shown[0] + "\u2013" + shown[1] : "Page " + shown[0]) + " of " + pages.length;
+      (shown.length === 2 && shown[0] !== shown[1] ? "Pages " + shown[0] + "\u2013" + shown[1] : "Page " + shown[0]) + " of " + pages.length;
     prev.disabled = at <= 1;
     next.disabled = at >= leaves.length;
   }
