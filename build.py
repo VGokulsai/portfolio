@@ -95,14 +95,15 @@ with io.open("sketchbook/pages.json", encoding="utf-8") as _f:
 SKETCH_LINE = "My new sketchbook: a cast of characters with their own bios, and some fashion sketches."
 SKETCH_COVER = 2  # The Fool, taped on the cover like a sticker
 
-# Records in the crate (DEMO, 25 Oct 2026): the songs he named on 6 Oct, as
-# placeholders until he picks the real list. (title, artist, sleeve, ink)
+# Records in the crate: his list of 25 Oct 2026 (DEMO until real players are in).
+# (title, artist, sleeve, ink)
 RECORDS = [
     ("Shape of You", "Ed Sheeran", "#E8FF3F", "#0F1310"),
     ("Kala Chashma", "Amar Arshi, Badshah, Neha Kakkar", "#E0523B", "#F2F4E9"),
     ("Red Red", "", "#5FD08A", "#0F1310"),
-    ("Spanish songs", "", "#F2F4E9", "#0F1310"),
-    ("Next pick", "", "#2C352A", "#F2F4E9"),
+    ("Gangnam Style", "PSY", "#F2F4E9", "#0F1310"),
+    ("Love Nwantiti", "CKay", "#1F55C6", "#F2F4E9"),
+    ("Mi Gente", "J Balvin, Willy William", "#0F1310", "#E8FF3F"),
 ]
 
 # What I actually believe, kept to the three that changed how I build.
@@ -457,7 +458,7 @@ def closed_book(pre):
 
 
 def sleeves():
-    tilt = ("-3deg", "2deg", "-1deg", "3deg", "-2deg")
+    tilt = ("-3deg", "2deg", "-1deg", "3deg", "-2deg", "1deg")
     return "".join(
         '<button class="sleeve" type="button" style="--i:%d;--tilt:%s;--c:%s;--ink:%s" data-title="%s" data-artist="%s"'
         ' aria-label="Play %s"><span class="sleeve-face"><b>%s</b><i>%s</i></span></button>'
@@ -492,26 +493,47 @@ ART_TEMPLATE = """<meta charset="utf-8">
 <link rel="stylesheet" href="../sketchbook/book.css">
 <link rel="stylesheet" href="../records/records.css">
 <style>{{style}}
-/* ---- the art page: words on the left, the book floating on the right ---- */
-.art{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);align-items:center;
-  min-height:calc(100dvh - 180px)}
-.art h1{font:400 clamp(72px,12vw,168px)/.84 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:10px 0 28px}
-.art h1 .dot{color:var(--hot)}
-.art h2{font:700 12px/16px var(--mono);margin:0 0 6px;color:var(--chalk)}
-.art .tag{margin:0 0 6px;max-width:44ch}
-.art .meta{margin:0;font-family:var(--mono);color:var(--dim)}
-.art .home{display:inline-block;margin-top:28px;font-family:var(--mono);color:var(--chalk);
-  text-decoration:underline;text-decoration-color:var(--dim);text-underline-offset:3px}
-@media (hover:hover){.art .home:hover{color:var(--hot);text-decoration-color:var(--hot)}}
+/* ---- the art page: his loud side. Two full-bleed colour bands (lime for the
+   sketches, his crayon pink for the songs), his own lines as the headlines,
+   a black sticker for the aside, and hand-drawn sparkles in the margins. ---- */
+.art{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:clamp(32px,6vw,96px);align-items:center;
+  margin:0 -32px;padding:clamp(48px,7vw,96px) 32px;overflow:hidden}
+.art.sketches{background:var(--hot);color:#0F1310;min-height:calc(100dvh - 120px)}
+.art.records{background:#C2255C;color:var(--chalk);grid-template-columns:1fr;gap:28px}
+.art.records h2{max-width:none}
+.art.records .rec-stage{justify-content:start}
+.art .label{margin:0 0 14px;font:700 11px/16px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.art h1,.art h2{font:400 clamp(52px,8vw,124px)/.86 var(--display);text-transform:uppercase;letter-spacing:.01em;
+  margin:0 0 22px;max-width:10ch}
+.art .aside{display:inline-block;margin:0 0 22px;padding:9px 13px;background:#0F1310;color:var(--hot);
+  font:700 14px/18px var(--mono);transform:rotate(-2deg);box-shadow:0 6px 14px rgba(0,0,0,.25)}
+.art.records .aside{color:var(--chalk)}
+.art .tag{margin:0 0 6px;max-width:44ch;color:inherit;font-size:14px;line-height:20px}
+.art .meta{margin:0;font-family:var(--mono);opacity:.78}
+.art .home{display:inline-block;margin-top:26px;font-family:var(--mono);color:inherit;
+  text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.art.sketches :focus-visible{outline-color:#0F1310}
+@media (hover:hover){.art .home:hover{text-decoration-style:wavy}}
+.art .now{color:inherit;opacity:.9}.art .now b{color:inherit;font-weight:700}
 .art .sketch3d{--bw:clamp(240px,26vw,340px)}
-.art h2.big{font:400 clamp(56px,8vw,120px)/.84 var(--display);text-transform:uppercase;letter-spacing:.01em;margin:0 0 24px}
-.art h2.big .dot{color:var(--hot)}
-.records{min-height:auto;padding:24px 0 64px;border-top:1px solid var(--line)}
 .art .stage{padding:20px 48px 56px 24px}
+/* hand-drawn sparkles and squiggles in the margins */
+.doodle{position:absolute;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;opacity:.85}
+.doodle.a{width:34px;left:46%;top:14%;transform:rotate(12deg)}
+.doodle.b{width:22px;left:4%;bottom:12%;transform:rotate(-8deg)}
+.doodle.c{width:70px;right:6%;top:9%;transform:rotate(-6deg)}
+.doodle.d{width:28px;right:38%;bottom:10%;transform:rotate(18deg)}
+.doodle.e{width:80px;left:34%;bottom:16%;transform:rotate(4deg)}
+@media (prefers-reduced-motion:no-preference){
+  .doodle.a,.doodle.d{animation:twinkle 2.6s ease-in-out infinite alternate}
+  @keyframes twinkle{to{scale:.8;opacity:.55}}
+}
 @media (max-width:640px){
-  .art{grid-template-columns:1fr;gap:12px;min-height:0}
+  .art{grid-template-columns:1fr;gap:12px;margin:0 -20px;padding:44px 20px}
+  .art.sketches{min-height:0}
   .art .stage{justify-self:center;padding:24px 18px 56px 18px}
   .art .sketch3d{--bw:min(72vw,280px)}
+  .doodle.a,.doodle.c,.doodle.e{display:none}
 }
 </style>
 
@@ -523,10 +545,12 @@ ART_TEMPLATE = """<meta charset="utf-8">
 </header>
 
 <main>
-<section class="art">
+<section class="art sketches">
+  <svg class="doodle a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg><svg class="doodle b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg><svg class="doodle c" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg>
   <div>
-    <h1>Art<span class="dot">.</span></h1>
-    <h2>Sketchbook, vol. 01</h2>
+    <p class="label">Art &middot; sketchbook vol. 01</p>
+    <h1>Check out these sketches.</h1>
+    <p class="aside">not the best, but he's at least trying.</p>
     <p class="tag">{{line}}</p>
     <p class="meta">{{n}} pages so far. Tap the book to open it, then drag the pages to turn them.</p>
     <a class="home" href="../">Back to the home page</a>
@@ -535,9 +559,10 @@ ART_TEMPLATE = """<meta charset="utf-8">
 </section>
 
 <section class="art records">
+  <svg class="doodle d" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg><svg class="doodle e" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg>
   <div>
-    <h2 class="big">Records<span class="dot">.</span></h2>
-    <p class="tag">On repeat, no skips. Pick a record from the crate and it goes on the turntable.</p>
+    <p class="label">Records &middot; on repeat</p>
+    <h2>Check out these songs, baby.</h2>
     <p class="now"></p>
   </div>
   <div class="rec-stage">
