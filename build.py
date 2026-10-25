@@ -213,9 +213,10 @@ def render(ps, source, avatar=None):
         % (esc(k), esc(u), esc(n), esc(line)) for k, n, u, line in WORK)
 
     # The sketchbook lives on its own page (art/); here it is one row like the rest.
-    art = ('<li class="row job"><span class="kind">Sketches</span><p class="what">'
-           '<a href="art/">Sketchbook</a> <span class="line">%s %d pages so far.</span></p></li>'
-           % (esc(SKETCH_LINE), len(SKETCH)))
+    # His name for it (25 Oct 2026). The counts come from the files.
+    art = ('<li class="row job"><span class="kind">Art</span><p class="what">'
+           '<a href="art/">the artistic side of meeee</a> <span class="line">%d sketches and %d songs on repeat.</span></p></li>'
+           % (len(SKETCH), len(RECORDS)))
 
     rows = "\n".join(
         '<li class="row" style="--i:%d"><time datetime="%s">%s</time>'
@@ -706,7 +707,7 @@ def check():
     assert all('href="%s"' % u in workhtml for _k, _n, u, _l in WORK), "work links go where they say"
     # Art: the home page row links to the art page, which holds the book. Every
     # page is in the book, on disk (seen from art/), described, and counted from the files.
-    assert '<a href="art/">Sketchbook</a>' in html and "%d pages so far" % len(SKETCH) in html, "the Art row"
+    assert '<a href="art/">the artistic side of meeee</a>' in html and         "%d sketches and %d songs" % (len(SKETCH), len(RECORDS)) in html, "the Art row"
     art = render_art()
     m = re.search(r'<script type="application/json" id="sketch-pages">(.*?)</script>', art, re.S)
     book = json.loads(m.group(1)) if m else []
