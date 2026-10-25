@@ -7,7 +7,7 @@
   var deck = document.querySelector(".deck");
   if (!deck) return;
   var disc = deck.querySelector(".disc"), led = deck.querySelector(".led"), notes = document.querySelector(".notes");
-  var now = document.querySelector(".now"), playing = null, timers = [], ctx = null, seen = true;
+  var sheet = document.querySelector(".records"), now = document.querySelector(".now"), playing = null, timers = [], ctx = null, seen = true;
   var calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var NOTE = '<svg viewBox="0 0 24 24"><path d="M9 3v11.3A3.5 3.5 0 1 0 11 17V7h7V3z"/></svg>';
 
@@ -42,6 +42,7 @@
   if (window.IntersectionObserver) new IntersectionObserver(function (es) { seen = es[0].isIntersecting; }).observe(deck);
 
   function idle() {
+    sheet.classList.remove("playing");
     led.textContent = "33 rpm · off";
     now.innerHTML = "Pick a record from the crate.";
   }
@@ -49,6 +50,7 @@
   function drop(s) {
     disc.style.setProperty("--c", s.style.getPropertyValue("--c"));
     deck.classList.add("on");
+    sheet.classList.add("playing");             // the staff's notes start hopping
     led.textContent = "33 rpm · on";
     now.innerHTML = '<span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Now spinning: <b>' +
       s.dataset.title + "</b>" + (s.dataset.artist ? " · " + s.dataset.artist : "");

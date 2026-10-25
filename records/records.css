@@ -83,6 +83,20 @@
   15% { opacity: .95; }
   100% { opacity: 0; translate: var(--dx) -130px; rotate: 12deg; }
 }
+/* a hand-drawn staff across the empty side of the sheet; its notes bob at
+   rest and hop on the beat while a record plays */
+.staff { position: absolute; right: 1%; top: 44%; width: min(56%, 760px); stroke: var(--chalk); pointer-events: none; }
+.staff .ln { fill: none; stroke-width: 1.6; opacity: .45; stroke-linecap: round; }
+.staff .n { fill: var(--k); stroke: var(--k); animation: bob 3.2s ease-in-out var(--d) infinite alternate; transform-box: fill-box; }
+.staff .st { stroke-width: 2.4; stroke-linecap: round; }
+.staff .fl { fill: none; stroke-width: 2.4; stroke-linecap: round; }
+.staff .bm { stroke-width: 6; stroke-linecap: round; }
+@keyframes bob { to { translate: 0 -7px; } }
+.records.playing .staff .n { animation: hop .46s cubic-bezier(0.23, 1, 0.32, 1) var(--d) infinite alternate; }
+@keyframes hop { to { translate: 0 -12px; rotate: -6deg; } }
+.bignote { position: absolute; right: 7%; top: 9%; width: 64px; fill: var(--hot); stroke: var(--hot); rotate: 14deg;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .25)); pointer-events: none; animation: bob 2.8s ease-in-out infinite alternate; }
+
 /* level bars beside the song name */
 .eq { display: inline-flex; gap: 3px; align-items: flex-end; height: 14px; margin-right: 8px; vertical-align: -2px; }
 .eq i { width: 3px; height: 30%; background: currentColor; border-radius: 1px; animation: eq .7s ease-in-out infinite alternate; }
@@ -104,4 +118,6 @@
   .deck.on .disc, .eq i, .deck.thud { animation: none; }
   .sleeve, .disc, .arm { transition: opacity 200ms ease; }
   .notes { display: none; }
+  .staff .n, .records.playing .staff .n, .bignote { animation: none; }
 }
+@media (max-width: 1100px) { .staff { display: none; } }
