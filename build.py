@@ -223,6 +223,15 @@ def render(ps, source, avatar=None):
         '<p class="what">%s</p></li>' % (i, d, short_date(d), esc(t))
         for i, (d, t) in enumerate(sorted(MILESTONES, reverse=True)))  # newest first, 2025 at the top
 
+    # Each section is a sheet of paper on the dark page (same world as art/):
+    # torn top and bottom, a strip or two of tape, a doodle in the margin.
+    edge = ('<svg class="torn %s" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">'
+            '<path d="' + TORN + '"/></svg>')
+    spark = '<svg class="doodle %s" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg>'
+    squig = '<svg class="doodle %s" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg>'
+    tape = '<span class="tape %s" aria-hidden="true"></span>'
+    paper = lambda *extra: edge % "top" + edge % "bottom" + "".join(extra)
+
     rules = "".join(
         '<div class="rule"><h3>%s</h3><p>%s</p></div>' % (esc(t), esc(b))
         for t, b in RULES)
@@ -237,6 +246,11 @@ def render(ps, source, avatar=None):
         "rows": rows,
         "work": work,
         "art": art,
+        "sheet_hero": paper(tape % "t1", spark % "a", squig % "c"),
+        "sheet_work": paper(tape % "t2", spark % "d"),
+        "sheet_art": paper(tape % "t1", spark % "b"),
+        "sheet_time": paper(tape % "t3", squig % "e"),
+        "sheet_how": paper(tape % "t2", spark % "a"),
         "hire": hire,
         "cache_note": cache_note,
         "rules": rules,
@@ -250,6 +264,8 @@ def render(ps, source, avatar=None):
         "user": USER,
     }
 
+
+TORN = "M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"  # the torn paper edge shared by every sheet
 
 TAGLINE = "I build tools that check whether something is true before you act on it. Hyderabad."
 
@@ -352,6 +368,57 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 .foot a{text-decoration-color:var(--dim);text-underline-offset:3px}
 .foot b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
 
+/* ---- the sheets: each section is coloured paper stuck on the dark page ----
+   torn top and bottom, printed dots, tape, a slight tilt (the content tilts
+   back so it reads straight), each sheet overlapping the one above. */
+.page{overflow-x:clip}
+.sheets{padding-top:28px}
+.sheet{--band:var(--hot);--ink:#0F1310;--dots:rgba(15,19,16,.09);--r:-.6deg;position:relative;
+  margin:2px -32px 0;padding:clamp(52px,6vw,84px) 32px;color:var(--ink);rotate:var(--r);
+  background:radial-gradient(var(--dots) 1.1px,transparent 1.5px) 0 0/13px 13px,var(--band)}
+.sheet > div{rotate:calc(var(--r) * -1)}
+.sheet:nth-child(2){z-index:2}.sheet:nth-child(3){z-index:3}.sheet:nth-child(4){z-index:4}.sheet:nth-child(5){z-index:5}
+.sheet.lime{--band:#E8FF3F;--r:-.6deg}
+.sheet.paper{--band:#F2F4E9;--r:.45deg}
+.sheet.pink{--band:#C2255C;--ink:#F2F4E9;--dots:rgba(0,0,0,.12);--r:-.5deg}
+.sheet.blue{--band:#1F55C6;--ink:#F2F4E9;--dots:rgba(0,0,0,.14);--r:.5deg}
+.sheet.green{--band:#5FD08A;--r:-.4deg;margin-bottom:46px}
+.sheet.how{max-width:none}.sheet.how > div{max-width:640px}
+.sheet .loud{font:400 clamp(52px,8vw,120px)/.86 var(--display);text-transform:uppercase;letter-spacing:.01em;
+  margin:0 0 26px;color:var(--ink)}
+.sheet .loud .dot{color:var(--ink)}
+.sheet.lime .loud .dot{color:#C2255C}
+.sheet .tag,.sheet .hire,.sheet .what,.sheet .rule h3{color:var(--ink);font-size:15px;line-height:22px}
+.sheet .tag{max-width:58ch}.sheet .tag b,.sheet .hire b{color:var(--ink);font-weight:700}
+.sheet .line,.sheet .kind,.sheet time,.sheet .rule p{color:var(--ink);opacity:.72}
+.sheet .kind,.sheet time{font-size:12px}
+.sheet .line{font-size:15px;line-height:22px}
+.sheet .rule p{font-size:14px;line-height:20px}
+.sheet .what{max-width:min(78ch,62vw)}
+.sheet .hire a,.sheet .what a{color:var(--ink);text-decoration-color:currentColor;text-decoration-thickness:2px}
+@media (hover:hover){.sheet .hire a:hover,.sheet .what a:hover{color:var(--ink);text-decoration-color:currentColor;text-decoration-style:wavy}}
+.sheet :focus-visible{outline-color:var(--ink)}
+.sheet .work,.sheet .ledger{gap:18px}
+.sheet .rules{gap:16px}
+.sheet .rule h3{font-weight:700}
+.torn{position:absolute;left:0;width:100%%;height:30px;fill:var(--band);pointer-events:none}
+.torn.top{top:-29px}
+.torn.bottom{bottom:-29px;scale:1 -1}
+.tape{position:absolute;width:118px;height:30px;background:rgba(239,237,227,.82);z-index:6;pointer-events:none;
+  box-shadow:0 2px 4px rgba(0,0,0,.18)}
+.sheet .tape.t1{top:-40px;left:9%%;rotate:-7deg}
+.sheet .tape.t2{top:-44px;right:14%%;rotate:5deg}
+.sheet .tape.t3{top:-42px;left:42%%;rotate:-4deg}
+.doodle{position:absolute;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;opacity:.8}
+.sheet .doodle.a{width:34px;right:8%%;top:18%%;rotate:12deg}
+.sheet .doodle.b{width:26px;right:12%%;bottom:20%%;rotate:-8deg}
+.sheet .doodle.c{width:80px;right:22%%;bottom:16%%;rotate:-6deg}
+.sheet .doodle.d{width:28px;right:6%%;top:14%%;rotate:18deg}
+.sheet .doodle.e{width:80px;right:8%%;top:12%%;rotate:4deg}
+@media (prefers-reduced-motion:no-preference){
+  .doodle.a,.doodle.d{animation:twinkle 2.6s ease-in-out infinite alternate}
+  @keyframes twinkle{to{scale:.8;opacity:.5}}
+}
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.row{animation:none}}
 
@@ -359,6 +426,10 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   .page{padding:20px}
   .row{gap:20px}
   .what{max-width:none}
+  .sheet{margin-left:-20px;margin-right:-20px;padding:48px 20px}
+  .sheet .what{max-width:none}
+  .tape{width:86px;height:24px}
+  .sheet .doodle,.sheet.hero .tape{display:none}   /* phones: no room in the margins; the tape would cover the links */
   header.bar{flex-wrap:wrap;row-gap:14px}
   /* 28px between wrapped rows: each link has a 44px tap area on a 16px line,
      so anything tighter lets a tap between rows land on the wrong link. */
@@ -376,37 +447,50 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   <nav class="links">%(links)s</nav>
 </header>
 
-<main>
-<p class="tag">I build tools that check whether something is true before you
-  act on it. <b>A zero means two things: nothing was there, or I could not
-  look.</b> Most of what I build exists to tell those apart.</p>
-<p class="hire">%(hire)sWant something built? <a href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a></p>
+<main class="sheets">
+<section class="sheet lime hero">%(sheet_hero)s
+  <div>
+    <h1 class="loud">Gokul Sai<span class="dot">.</span></h1>
+    <p class="tag">I build tools that check whether something is true before you
+      act on it. <b>A zero means two things: nothing was there, or I could not
+      look.</b> Most of what I build exists to tell those apart.</p>
+    <p class="hire">%(hire)sWant something built? <a href="mailto:gokulsai1004@gmail.com">gokulsai1004@gmail.com</a></p>
+  </div>
+</section>
 
-<section class="sec">
-  <h2>Work</h2>
-  <ul class="work">
+<section class="sheet paper sec">%(sheet_work)s
+  <div>
+    <h2 class="loud">Work.</h2>
+    <ul class="work">
 %(work)s
-  </ul>
+    </ul>
+  </div>
 </section>
 
-<section class="sec">
-  <h2>Art</h2>
-  <ul class="work">
+<section class="sheet pink sec">%(sheet_art)s
+  <div>
+    <h2 class="loud">Art.</h2>
+    <ul class="work">
 %(art)s
-  </ul>
+    </ul>
+  </div>
 </section>
 
-<section class="sec">
-  <h2>Timeline</h2>
-  <ul class="ledger">
+<section class="sheet blue sec">%(sheet_time)s
+  <div>
+    <h2 class="loud">Timeline.</h2>
+    <ul class="ledger">
 %(rows)s
-  </ul>
+    </ul>
+  </div>
 </section>
 
-<section class="sec how">
-  <h2>How I work</h2>
-  <div class="rules">
+<section class="sheet green sec how">%(sheet_how)s
+  <div>
+    <h2 class="loud">How I work.</h2>
+    <div class="rules">
 %(rules)s
+    </div>
   </div>
 </section>
 </main>

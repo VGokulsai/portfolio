@@ -100,6 +100,57 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
 .foot a{text-decoration-color:var(--dim);text-underline-offset:3px}
 .foot b{color:var(--chalk);font-weight:400;font-variant-numeric:tabular-nums}
 
+/* ---- the sheets: each section is coloured paper stuck on the dark page ----
+   torn top and bottom, printed dots, tape, a slight tilt (the content tilts
+   back so it reads straight), each sheet overlapping the one above. */
+.page{overflow-x:clip}
+.sheets{padding-top:28px}
+.sheet{--band:var(--hot);--ink:#0F1310;--dots:rgba(15,19,16,.09);--r:-.6deg;position:relative;
+  margin:2px -32px 0;padding:clamp(52px,6vw,84px) 32px;color:var(--ink);rotate:var(--r);
+  background:radial-gradient(var(--dots) 1.1px,transparent 1.5px) 0 0/13px 13px,var(--band)}
+.sheet > div{rotate:calc(var(--r) * -1)}
+.sheet:nth-child(2){z-index:2}.sheet:nth-child(3){z-index:3}.sheet:nth-child(4){z-index:4}.sheet:nth-child(5){z-index:5}
+.sheet.lime{--band:#E8FF3F;--r:-.6deg}
+.sheet.paper{--band:#F2F4E9;--r:.45deg}
+.sheet.pink{--band:#C2255C;--ink:#F2F4E9;--dots:rgba(0,0,0,.12);--r:-.5deg}
+.sheet.blue{--band:#1F55C6;--ink:#F2F4E9;--dots:rgba(0,0,0,.14);--r:.5deg}
+.sheet.green{--band:#5FD08A;--r:-.4deg;margin-bottom:46px}
+.sheet.how{max-width:none}.sheet.how > div{max-width:640px}
+.sheet .loud{font:400 clamp(52px,8vw,120px)/.86 var(--display);text-transform:uppercase;letter-spacing:.01em;
+  margin:0 0 26px;color:var(--ink)}
+.sheet .loud .dot{color:var(--ink)}
+.sheet.lime .loud .dot{color:#C2255C}
+.sheet .tag,.sheet .hire,.sheet .what,.sheet .rule h3{color:var(--ink);font-size:15px;line-height:22px}
+.sheet .tag{max-width:58ch}.sheet .tag b,.sheet .hire b{color:var(--ink);font-weight:700}
+.sheet .line,.sheet .kind,.sheet time,.sheet .rule p{color:var(--ink);opacity:.72}
+.sheet .kind,.sheet time{font-size:12px}
+.sheet .line{font-size:15px;line-height:22px}
+.sheet .rule p{font-size:14px;line-height:20px}
+.sheet .what{max-width:min(78ch,62vw)}
+.sheet .hire a,.sheet .what a{color:var(--ink);text-decoration-color:currentColor;text-decoration-thickness:2px}
+@media (hover:hover){.sheet .hire a:hover,.sheet .what a:hover{color:var(--ink);text-decoration-color:currentColor;text-decoration-style:wavy}}
+.sheet :focus-visible{outline-color:var(--ink)}
+.sheet .work,.sheet .ledger{gap:18px}
+.sheet .rules{gap:16px}
+.sheet .rule h3{font-weight:700}
+.torn{position:absolute;left:0;width:100%;height:30px;fill:var(--band);pointer-events:none}
+.torn.top{top:-29px}
+.torn.bottom{bottom:-29px;scale:1 -1}
+.tape{position:absolute;width:118px;height:30px;background:rgba(239,237,227,.82);z-index:6;pointer-events:none;
+  box-shadow:0 2px 4px rgba(0,0,0,.18)}
+.sheet .tape.t1{top:-40px;left:9%;rotate:-7deg}
+.sheet .tape.t2{top:-44px;right:14%;rotate:5deg}
+.sheet .tape.t3{top:-42px;left:42%;rotate:-4deg}
+.doodle{position:absolute;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;pointer-events:none;opacity:.8}
+.sheet .doodle.a{width:34px;right:8%;top:18%;rotate:12deg}
+.sheet .doodle.b{width:26px;right:12%;bottom:20%;rotate:-8deg}
+.sheet .doodle.c{width:80px;right:22%;bottom:16%;rotate:-6deg}
+.sheet .doodle.d{width:28px;right:6%;top:14%;rotate:18deg}
+.sheet .doodle.e{width:80px;right:8%;top:12%;rotate:4deg}
+@media (prefers-reduced-motion:no-preference){
+  .doodle.a,.doodle.d{animation:twinkle 2.6s ease-in-out infinite alternate}
+  @keyframes twinkle{to{scale:.8;opacity:.5}}
+}
 @keyframes rise{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.row{animation:none}}
 
@@ -107,6 +158,10 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   .page{padding:20px}
   .row{gap:20px}
   .what{max-width:none}
+  .sheet{margin-left:-20px;margin-right:-20px;padding:48px 20px}
+  .sheet .what{max-width:none}
+  .tape{width:86px;height:24px}
+  .sheet .doodle,.sheet.hero .tape{display:none}   /* phones: no room in the margins; the tape would cover the links */
   header.bar{flex-wrap:wrap;row-gap:14px}
   /* 28px between wrapped rows: each link has a 44px tap area on a 16px line,
      so anything tighter lets a tap between rows land on the wrong link. */
