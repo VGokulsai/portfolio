@@ -110,6 +110,14 @@ RECORDS = [
     ("Mi Gente", "J Balvin, Willy William", "#0F1310", "#E8FF3F"),
 ]
 
+# Books on the art page: his three favourites, 27 Oct 2026. Covers are our own
+# type designs, not the publishers' art. (title, author, cover, ink)
+BOOKS = [
+    ("Atomic Habits", "James Clear", "#F2F4E9", "#0F1310"),
+    ("The Subtle Art of Not Giving a F*ck", "Mark Manson", "#E0523B", "#F2F4E9"),
+    ("Do Epic Shit", "Ankur Warikoo", "#0F1310", "#E8FF3F"),
+]
+
 # What I actually believe, kept to the three that changed how I build.
 RULES = [
     ("A zero means two things",
@@ -595,6 +603,15 @@ def sleeves():
         for i, (t, a, c, ink) in enumerate(RECORDS))
 
 
+def books():
+    return "".join(
+        '<li class="bk" style="--i:%d;--c:%s;--ink:%s"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="%s by %s">'
+        '<span class="bk-front"><b>%s</b><i>%s</i></span><span class="bk-spine"><b>%s</b></span>'
+        '<span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li>'
+        % (i, c, ink, esc(t), esc(a), esc(t), esc(a), esc(t))
+        for i, (t, a, c, ink) in enumerate(BOOKS))
+
+
 def render_art():
     # The page shares the home page's stylesheet and clock, lifted out of TEMPLATE
     # (whose % signs are doubled for formatting) so the two can never drift apart.
@@ -606,6 +623,7 @@ def render_art():
     page = ART_TEMPLATE
     for key, val in (("style", style), ("clock", clock), ("links", links), ("book", closed_book("../")),
                      ("line", esc(SKETCH_LINE)), ("n", str(len(SKETCH))), ("pages", pages), ("sleeves", sleeves()), ("nrec", str(len(RECORDS))),
+                     ("books", books()),
                      ("year", str(date.today().year))):
         page = page.replace("{{%s}}" % key, val)
     return page
@@ -677,8 +695,46 @@ ART_TEMPLATE = """<meta charset="utf-8">
   .doodle.a,.doodle.d{animation:twinkle 2.6s ease-in-out infinite alternate}
   @keyframes twinkle{to{scale:.8;opacity:.55}}
 }
+/* ---- books: three 3D books floating over a blue band. Idle float is CSS
+   keyframes (off the main thread); hover turns a book to face you. ---- */
+.art.books{--band:#1F55C6;--dots:rgba(0,0,0,.14);color:var(--chalk);grid-template-columns:1fr;gap:20px;
+  margin-top:2px;margin-bottom:40px;transform:rotate(-.4deg);z-index:3}
+.art.books > *{transform:rotate(.4deg)}
+.art.books h2{max-width:none}
+.shelf{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(40px,7vw,110px);margin:24px 0 0;padding:30px 0 10px;list-style:none}
+.bk{--w:clamp(120px,13vw,170px);--h:calc(var(--w) * 1.5);--d:calc(var(--w) * .22);position:relative;perspective:1100px}
+.bk-float{transform:rotate(calc((var(--i) - 1) * 4deg))}
+.bk-3d{position:relative;display:block;width:var(--w);height:var(--h);transform-style:preserve-3d;
+  transform:rotateY(32deg) rotateX(4deg);transition:transform 280ms cubic-bezier(.23,1,.32,1);outline-offset:8px}
+.bk-3d > span{position:absolute;top:0;backface-visibility:hidden}
+.bk-front,.bk-back{left:0;width:var(--w);height:var(--h);background:var(--c);color:var(--ink)}
+.bk-front{transform:translateZ(calc(var(--d) / 2));display:flex;flex-direction:column;justify-content:space-between;
+  padding:14px 12px;box-sizing:border-box;box-shadow:inset 6px 0 0 rgba(0,0,0,.14),inset -1px 0 0 rgba(255,255,255,.18)}
+.bk-front b{font:400 calc(var(--w) * .19)/.9 var(--display);text-transform:uppercase;overflow-wrap:anywhere}
+.bk-front i{font:700 calc(var(--w) * .065)/1.2 var(--mono);font-style:normal;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.bk-back{transform:rotateY(180deg) translateZ(calc(var(--d) / 2));filter:brightness(.75)}
+.bk-spine{left:calc(50% - var(--d) / 2);width:var(--d);height:var(--h);background:var(--c);color:var(--ink);
+  transform:rotateY(-90deg) translateZ(calc(var(--w) / 2));filter:brightness(.82);display:grid;place-items:center;overflow:hidden}
+.bk-spine b{writing-mode:vertical-rl;font:700 calc(var(--w) * .06)/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.bk-pages{left:calc(50% - var(--d) / 2);width:var(--d);height:calc(var(--h) - 6px);top:3px !important;
+  transform:rotateY(90deg) translateZ(calc(var(--w) / 2 - 3px));
+  background:repeating-linear-gradient(90deg,#EFEDE3 0 2px,#D9D5C6 2px 3px)}
+.bk-shadow{position:absolute;left:10%;right:10%;bottom:-34px;height:16px;border-radius:50%;background:rgba(0,0,0,.35);filter:blur(6px)}
+@media (hover:hover) and (pointer:fine){
+  .bk-3d:hover{transform:rotateY(-6deg) rotateX(2deg) translateY(-10px)}
+}
+.bk-3d:focus-visible{transform:rotateY(-6deg) rotateX(2deg) translateY(-10px)}
+@media (prefers-reduced-motion:no-preference){
+  .bk-float{animation:bob 5.6s cubic-bezier(.37,0,.63,1) infinite alternate;animation-delay:calc(var(--i) * -1.9s)}
+  .bk-shadow{animation:bob-shadow 5.6s cubic-bezier(.37,0,.63,1) infinite alternate;animation-delay:calc(var(--i) * -1.9s)}
+  @keyframes bob{from{transform:translateY(0) rotate(calc((var(--i) - 1) * 4deg))}
+    to{transform:translateY(-18px) rotate(calc((var(--i) - 1) * 4deg + 2deg))}}
+  @keyframes bob-shadow{from{transform:scale(1);opacity:1}to{transform:scale(.78);opacity:.55}}
+}
 @media (max-width:640px){
   .art{grid-template-columns:1fr;gap:12px;margin-left:-20px;margin-right:-20px;padding:52px 20px}
+  .bk{--w:min(26vw,110px)}
+  .shelf{gap:22px}
   .tape{width:86px;height:24px}
   .art.sketches{min-height:0}
   .art .stage{justify-self:center;padding:24px 18px 56px 18px}
@@ -734,6 +790,16 @@ ART_TEMPLATE = """<meta charset="utf-8">
       <div class="notes"></div>
     </div>
   </div>
+</section>
+
+<section class="art books">
+  <svg class="torn top" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"/></svg><svg class="torn bottom" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40 L0 18 L34 10 L73 26 L90 8 L110 17 L127 22 L154 7 L173 19 L213 8 L242 8 L283 7 L304 13 L321 24 L360 7 L388 7 L410 15 L450 10 L471 24 L504 23 L529 9 L555 17 L575 23 L593 24 L610 25 L637 21 L678 30 L712 20 L755 17 L788 13 L813 28 L842 8 L875 22 L920 16 L962 15 L980 9 L1026 19 L1050 30 L1085 10 L1130 19 L1146 27 L1164 30 L1198 16 L1200 25 L1200 40 Z"/></svg><span class="tape t1" aria-hidden="true"></span>
+  <svg class="doodle c" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg><svg class="doodle d" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg>
+  <div>
+    <p class="label">Books &middot; on the shelf</p>
+    <h2>Check out these books.</h2>
+  </div>
+  <ul class="shelf">{{books}}</ul>
 </section>
 </main>
 
@@ -847,6 +913,7 @@ def check():
         "the book's code ships and is linked"
     assert art.count('class="sketch3d"') == 1 and "{{" not in art and "%%" not in art, "the art page is filled in"
     assert "%d<br>pages" % len(SKETCH) in art, "the cover's page count comes from the files"
+    assert art.count('class="bk"') == len(BOOKS) and all(esc(t) in art for t, _, _, _ in BOOKS), "every book is on the shelf"
     assert "</span> <span class=\"w\">" in html, "the animated name keeps the space between Gokul and Sai"
     assert "Intl.DateTimeFormat" in art and "Asia/Kolkata" in art, "the art page carries the home page clock"
     assert 'member of Hack Club <a href="https://hackclub.com/slack/">join</a>' in html, "the Hack Club sticker and its join link"
