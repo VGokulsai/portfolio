@@ -110,12 +110,13 @@ RECORDS = [
     ("Mi Gente", "J Balvin, Willy William", "#0F1310", "#E8FF3F"),
 ]
 
-# Books on the art page: his three favourites, 27 Oct 2026. Covers are our own
-# type designs, not the publishers' art. (title, author, cover, ink)
+# Books on the art page: his favourites, 27 Oct 2026. Cover images come from
+# Open Library (covers.openlibrary.org), saved in books/. (title, author, file, spine, ink)
 BOOKS = [
-    ("Atomic Habits", "James Clear", "#F2F4E9", "#0F1310"),
-    ("The Subtle Art of Not Giving a F*ck", "Mark Manson", "#E0523B", "#F2F4E9"),
-    ("Do Epic Shit", "Ankur Warikoo", "#0F1310", "#E8FF3F"),
+    ("Atomic Habits", "James Clear", "atomic-habits.jpg", "#EDE6DC", "#3A2E22"),
+    ("The Subtle Art of Not Giving a F*ck", "Mark Manson", "subtle-art.jpg", "#F26A21", "#111111"),
+    ("Do Epic Shit", "Ankur Warikoo", "do-epic-shit.jpg", "#F5E03A", "#111111"),
+    ("Psycho-Cybernetics", "Maxwell Maltz", "psycho-cybernetics.jpg", "#F3F1EE", "#C8102E"),
 ]
 
 # What I actually believe, kept to the three that changed how I build.
@@ -225,10 +226,10 @@ def render(ps, source, avatar=None):
         % (esc(k), esc(u), esc(n), esc(line)) for k, n, u, line in WORK)
 
     # The sketchbook lives on its own page (art/); here it is one row like the rest.
-    # His name for it (25 Oct 2026). The counts come from the files.
+    # His name for it (27 Oct 2026). The counts come from the files.
     art = ('<li class="row job"><span class="kind">Art</span><p class="what">'
-           '<a href="art/">the artistic side of meeee</a> <span class="line">%d sketches and %d songs on repeat.</span></p></li>'
-           % (len(SKETCH), len(RECORDS)))
+           '<a href="art/">the creative side of me</a> <span class="line">what i love to do: %d sketches, %d songs on repeat and %d books.</span></p></li>'
+           % (len(SKETCH), len(RECORDS), len(BOOKS)))
 
     rows = "\n".join(
         '<li class="row" style="--i:%d"><time datetime="%s">%s</time>'
@@ -606,10 +607,10 @@ def sleeves():
 def books():
     return "".join(
         '<li class="bk" style="--i:%d;--c:%s;--ink:%s"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="%s by %s">'
-        '<span class="bk-front"><b>%s</b><i>%s</i></span><span class="bk-spine"><b>%s</b></span>'
+        '<span class="bk-front"><img src="../books/%s" alt="" loading="lazy"></span><span class="bk-spine"><b>%s</b></span>'
         '<span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li>'
-        % (i, c, ink, esc(t), esc(a), esc(t), esc(a), esc(t))
-        for i, (t, a, c, ink) in enumerate(BOOKS))
+        % (i, c, ink, esc(t), esc(a), esc(f), esc(t))
+        for i, (t, a, f, c, ink) in enumerate(BOOKS))
 
 
 def render_art():
@@ -708,10 +709,9 @@ ART_TEMPLATE = """<meta charset="utf-8">
   transform:rotateY(32deg) rotateX(4deg);transition:transform 280ms cubic-bezier(.23,1,.32,1);outline-offset:8px}
 .bk-3d > span{position:absolute;top:0;backface-visibility:hidden}
 .bk-front,.bk-back{left:0;width:var(--w);height:var(--h);background:var(--c);color:var(--ink)}
-.bk-front{transform:translateZ(calc(var(--d) / 2));display:flex;flex-direction:column;justify-content:space-between;
-  padding:14px 12px;box-sizing:border-box;box-shadow:inset 6px 0 0 rgba(0,0,0,.14),inset -1px 0 0 rgba(255,255,255,.18)}
-.bk-front b{font:400 calc(var(--w) * .19)/.9 var(--display);text-transform:uppercase;overflow-wrap:anywhere}
-.bk-front i{font:700 calc(var(--w) * .065)/1.2 var(--mono);font-style:normal;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.bk-front{transform:translateZ(calc(var(--d) / 2));overflow:hidden}
+.bk-front img{display:block;width:100%;height:100%;object-fit:cover}
+.bk-front::after{content:"";position:absolute;inset:0;box-shadow:inset 6px 0 0 rgba(0,0,0,.16),inset -1px 0 0 rgba(255,255,255,.2)}
 .bk-back{transform:rotateY(180deg) translateZ(calc(var(--d) / 2));filter:brightness(.75)}
 .bk-spine{left:calc(50% - var(--d) / 2);width:var(--d);height:var(--h);background:var(--c);color:var(--ink);
   transform:rotateY(-90deg) translateZ(calc(var(--w) / 2));filter:brightness(.82);display:grid;place-items:center;overflow:hidden}
@@ -797,7 +797,7 @@ ART_TEMPLATE = """<meta charset="utf-8">
   <svg class="doodle c" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg><svg class="doodle d" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg>
   <div>
     <p class="label">Books &middot; on the shelf</p>
-    <h2>Check out these books.</h2>
+    <h2>Love these books.</h2>
   </div>
   <ul class="shelf">{{books}}</ul>
 </section>
@@ -902,7 +902,8 @@ def check():
     assert all('href="%s"' % u in workhtml for _k, _n, u, _l in WORK), "work links go where they say"
     # Art: the home page row links to the art page, which holds the book. Every
     # page is in the book, on disk (seen from art/), described, and counted from the files.
-    assert '<a href="art/">the artistic side of meeee</a>' in html and         "%d sketches and %d songs" % (len(SKETCH), len(RECORDS)) in html, "the Art row"
+    assert '<a href="art/">the creative side of me</a>' in html and \
+        "%d sketches, %d songs on repeat and %d books" % (len(SKETCH), len(RECORDS), len(BOOKS)) in html, "the Art row"
     art = render_art()
     m = re.search(r'<script type="application/json" id="sketch-pages">(.*?)</script>', art, re.S)
     book = json.loads(m.group(1)) if m else []
@@ -913,7 +914,8 @@ def check():
         "the book's code ships and is linked"
     assert art.count('class="sketch3d"') == 1 and "{{" not in art and "%%" not in art, "the art page is filled in"
     assert "%d<br>pages" % len(SKETCH) in art, "the cover's page count comes from the files"
-    assert art.count('class="bk"') == len(BOOKS) and all(esc(t) in art for t, _, _, _ in BOOKS), "every book is on the shelf"
+    assert art.count('class="bk"') == len(BOOKS) and all(esc(t) in art and os.path.exists("books/" + f) for t, _, f, _, _ in BOOKS), \
+        "every book is on the shelf, with its cover file"
     assert "</span> <span class=\"w\">" in html, "the animated name keeps the space between Gokul and Sai"
     assert "Intl.DateTimeFormat" in art and "Asia/Kolkata" in art, "the art page carries the home page clock"
     assert 'member of Hack Club <a href="https://hackclub.com/slack/">join</a>' in html, "the Hack Club sticker and its join link"

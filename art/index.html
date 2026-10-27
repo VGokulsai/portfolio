@@ -263,10 +263,9 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   transform:rotateY(32deg) rotateX(4deg);transition:transform 280ms cubic-bezier(.23,1,.32,1);outline-offset:8px}
 .bk-3d > span{position:absolute;top:0;backface-visibility:hidden}
 .bk-front,.bk-back{left:0;width:var(--w);height:var(--h);background:var(--c);color:var(--ink)}
-.bk-front{transform:translateZ(calc(var(--d) / 2));display:flex;flex-direction:column;justify-content:space-between;
-  padding:14px 12px;box-sizing:border-box;box-shadow:inset 6px 0 0 rgba(0,0,0,.14),inset -1px 0 0 rgba(255,255,255,.18)}
-.bk-front b{font:400 calc(var(--w) * .19)/.9 var(--display);text-transform:uppercase;overflow-wrap:anywhere}
-.bk-front i{font:700 calc(var(--w) * .065)/1.2 var(--mono);font-style:normal;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.bk-front{transform:translateZ(calc(var(--d) / 2));overflow:hidden}
+.bk-front img{display:block;width:100%;height:100%;object-fit:cover}
+.bk-front::after{content:"";position:absolute;inset:0;box-shadow:inset 6px 0 0 rgba(0,0,0,.16),inset -1px 0 0 rgba(255,255,255,.2)}
 .bk-back{transform:rotateY(180deg) translateZ(calc(var(--d) / 2));filter:brightness(.75)}
 .bk-spine{left:calc(50% - var(--d) / 2);width:var(--d);height:var(--h);background:var(--c);color:var(--ink);
   transform:rotateY(-90deg) translateZ(calc(var(--w) / 2));filter:brightness(.82);display:grid;place-items:center;overflow:hidden}
@@ -352,9 +351,9 @@ time{flex:none;font-family:var(--mono);color:var(--dim);white-space:nowrap;
   <svg class="doodle c" viewBox="0 0 60 16" aria-hidden="true"><path d="M2 9q6-8 12 0t12 0 12 0 12 0 8-2"/></svg><svg class="doodle d" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1c1 7 4 10 11 11-7 1-10 4-11 11-1-7-4-10-11-11 7-1 10-4 11-11z"/></svg>
   <div>
     <p class="label">Books &middot; on the shelf</p>
-    <h2>Check out these books.</h2>
+    <h2>Love these books.</h2>
   </div>
-  <ul class="shelf"><li class="bk" style="--i:0;--c:#F2F4E9;--ink:#0F1310"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="Atomic Habits by James Clear"><span class="bk-front"><b>Atomic Habits</b><i>James Clear</i></span><span class="bk-spine"><b>Atomic Habits</b></span><span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li><li class="bk" style="--i:1;--c:#E0523B;--ink:#F2F4E9"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="The Subtle Art of Not Giving a F*ck by Mark Manson"><span class="bk-front"><b>The Subtle Art of Not Giving a F*ck</b><i>Mark Manson</i></span><span class="bk-spine"><b>The Subtle Art of Not Giving a F*ck</b></span><span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li><li class="bk" style="--i:2;--c:#0F1310;--ink:#E8FF3F"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="Do Epic Shit by Ankur Warikoo"><span class="bk-front"><b>Do Epic Shit</b><i>Ankur Warikoo</i></span><span class="bk-spine"><b>Do Epic Shit</b></span><span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li></ul>
+  <ul class="shelf"><li class="bk" style="--i:0;--c:#EDE6DC;--ink:#3A2E22"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="Atomic Habits by James Clear"><span class="bk-front"><img src="../books/atomic-habits.jpg" alt="" loading="lazy"></span><span class="bk-spine"><b>Atomic Habits</b></span><span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li><li class="bk" style="--i:1;--c:#F26A21;--ink:#111111"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="The Subtle Art of Not Giving a F*ck by Mark Manson"><span class="bk-front"><img src="../books/subtle-art.jpg" alt="" loading="lazy"></span><span class="bk-spine"><b>The Subtle Art of Not Giving a F*ck</b></span><span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li><li class="bk" style="--i:2;--c:#F5E03A;--ink:#111111"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="Do Epic Shit by Ankur Warikoo"><span class="bk-front"><img src="../books/do-epic-shit.jpg" alt="" loading="lazy"></span><span class="bk-spine"><b>Do Epic Shit</b></span><span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li><li class="bk" style="--i:3;--c:#F3F1EE;--ink:#C8102E"><div class="bk-float"><div class="bk-3d" tabindex="0" aria-label="Psycho-Cybernetics by Maxwell Maltz"><span class="bk-front"><img src="../books/psycho-cybernetics.jpg" alt="" loading="lazy"></span><span class="bk-spine"><b>Psycho-Cybernetics</b></span><span class="bk-pages"></span><span class="bk-back"></span></div></div><span class="bk-shadow" aria-hidden="true"></span></li></ul>
 </section>
 </main>
 
